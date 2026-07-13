@@ -16,7 +16,7 @@ cd mobile && npx expo start    # Mobile dev (iOS simulator)
 npm run build                  # Web build
 railway up -d                  # Deploy
 supabase db push               # Push migrations
-supabase gen types typescript --project-id seywnbufuewbiwoouwkk > src/lib/types/database.ts
+supabase gen types typescript --project-id seywnbufuewbiwoouwkk 2>/dev/null > packages/shared/src/types/database.ts
 ```
 
 **Project IDs:** Railway `00b2ac99-4a09-4959-992f-169c7f981b96` | Supabase `seywnbufuewbiwoouwkk`

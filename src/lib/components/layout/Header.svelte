@@ -34,7 +34,8 @@
     { href: '/leaderboard', label: 'Leaderboard' },
     { href: '/map', label: 'Map' },
     { href: '/learn', label: 'Learn' },
-    { href: '/blog', label: 'Blog' }
+    { href: '/blog', label: 'Blog' },
+    { href: '/pricing', label: 'Pricing' }
   ];
 
   function closeMobileMenu() {

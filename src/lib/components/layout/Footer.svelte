@@ -49,6 +49,7 @@
       <!-- Links + Copyright -->
       <div class="flex flex-col items-center gap-2 sm:items-end">
         <div class="flex items-center gap-4 text-sm">
+          <a href="/pricing" class="text-slate-500 dark:text-slate-400 hover:text-accent transition-colors">Pricing</a>
           <a href="/guidelines" class="text-slate-500 dark:text-slate-400 hover:text-accent transition-colors">Guidelines</a>
           <a href="/legal/terms" class="text-slate-500 dark:text-slate-400 hover:text-accent transition-colors">Terms</a>
           <a href="/legal/privacy" class="text-slate-500 dark:text-slate-400 hover:text-accent transition-colors">Privacy</a>

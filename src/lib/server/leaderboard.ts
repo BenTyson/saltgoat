@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -35,7 +36,7 @@ export async function getLeaderboard(
     `);
 
   if (summitError) {
-    console.error('Error fetching summit data:', summitError);
+    logger.error('Error fetching summit data', { error: summitError });
     return { entries: [], stats: { totalClimbers: 0, totalSummitsLogged: 0, peakBaggers: 0 } };
   }
 
@@ -45,7 +46,7 @@ export async function getLeaderboard(
     .select('id, display_name');
 
   if (profileError) {
-    console.error('Error fetching profiles:', profileError);
+    logger.error('Error fetching profiles', { error: profileError });
     return { entries: [], stats: { totalClimbers: 0, totalSummitsLogged: 0, peakBaggers: 0 } };
   }
 
@@ -173,7 +174,7 @@ export async function getRecentActivity(
     .limit(limit);
 
   if (error) {
-    console.error('Error fetching recent activity:', error);
+    logger.error('Error fetching recent activity', { error: error });
     return [];
   }
 

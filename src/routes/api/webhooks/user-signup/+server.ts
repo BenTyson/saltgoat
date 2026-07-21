@@ -3,6 +3,9 @@ import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import { createSupabaseServiceClient } from '$lib/server/supabase';
 import { subscribe, sendRaw } from '$lib/server/sparrow';
+import { safeBearerEqual } from '$lib/server/security';
+import { rateLimit, clientKey, tooManyRequests } from '$lib/server/rateLimit';
+import { logger } from '$lib/server/logger';
 
 interface WebhookPayload {
 	type: 'INSERT' | 'UPDATE' | 'DELETE';
@@ -12,14 +15,19 @@ interface WebhookPayload {
 	old_record: Record<string, unknown> | null;
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
+	const { request } = event;
+
+	const limit = rateLimit('webhook', clientKey(event));
+	if (!limit.allowed) return tooManyRequests(limit);
+
 	const secret = env.SUPABASE_WEBHOOK_SECRET;
 	if (!secret) {
 		return json({ error: 'Webhook not configured' }, { status: 500 });
 	}
 
 	const authHeader = request.headers.get('Authorization');
-	if (authHeader !== `Bearer ${secret}`) {
+	if (!safeBearerEqual(authHeader, secret)) {
 		return json({ error: 'Invalid authorization' }, { status: 401 });
 	}
 
@@ -54,7 +62,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			})
 		]);
 	} catch (err) {
-		console.error('user-signup webhook error:', err);
+		logger.error('user-signup webhook error', { error: err, userId });
 	}
 
 	return json({ received: true });

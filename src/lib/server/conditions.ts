@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables, TablesInsert, ForecastResponse, ElevationBandForecast, DayForecast, PeriodForecast, PeakForecastRow } from '$lib/types/database';
 import { generateForecastSummary, generateHikerInsights } from '$lib/utils/weather';
@@ -155,7 +156,7 @@ export async function upsertConditions(
     .upsert(records, { onConflict: 'peak_id,forecast_date' });
 
   if (error) {
-    console.error('Error upserting conditions:', error);
+    logger.error('Error upserting conditions', { error: error });
     throw error;
   }
 }
@@ -175,7 +176,7 @@ export async function getConditionsForPeak(
     .limit(7);
 
   if (error) {
-    console.error('Error fetching conditions:', error);
+    logger.error('Error fetching conditions', { error: error });
     return [];
   }
 
@@ -509,7 +510,7 @@ export async function upsertForecasts(
     .upsert(records, { onConflict: 'peak_id,elevation_band,forecast_date,time_period' });
 
   if (error) {
-    console.error('Error upserting forecasts:', error);
+    logger.error('Error upserting forecasts', { error: error });
     throw error;
   }
 }
@@ -580,7 +581,7 @@ export async function cleanStaleForecasts(
     .lt('forecast_date', cutoff);
 
   if (error) {
-    console.error('Error cleaning stale forecasts:', error);
+    logger.error('Error cleaning stale forecasts', { error: error });
   }
 }
 
@@ -675,7 +676,7 @@ export async function getForecastForPeak(
     .order('time_period', { ascending: true });
 
   if (error) {
-    console.error('Error fetching forecasts:', error);
+    logger.error('Error fetching forecasts', { error: error });
     return null;
   }
 

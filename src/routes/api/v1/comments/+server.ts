@@ -1,9 +1,16 @@
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/supabase';
 import { createComment, deleteComment } from '$lib/server/comments';
+import { rateLimit, clientKey, tooManyRequests } from '$lib/server/rateLimit';
+import { logger } from '$lib/server/logger';
 
 /** POST /api/v1/comments — create a comment on a summit */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
+	const { request } = event;
+
+	const limit = rateLimit('ugc', clientKey(event));
+	if (!limit.allowed) return tooManyRequests(limit);
+
 	const { supabase, user, error: authError } = await requireAuth(request);
 
 	if (!supabase || !user) {
@@ -36,7 +43,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (e) {
-		console.error('Error creating comment:', e);
+		logger.error('Error creating comment', { error: e });
 		return new Response(JSON.stringify({ error: 'Failed to create comment' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
@@ -69,7 +76,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
 		await deleteComment(supabase, comment_id);
 		return new Response(null, { status: 204 });
 	} catch (e) {
-		console.error('Error deleting comment:', e);
+		logger.error('Error deleting comment', { error: e });
 		return new Response(JSON.stringify({ error: 'Failed to delete comment' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }

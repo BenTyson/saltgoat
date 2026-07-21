@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables, TablesInsert } from '$lib/types/database';
 
@@ -26,7 +27,7 @@ export async function getPeakReviews(
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching reviews:', error);
+    logger.error('Error fetching reviews', { error: error });
     return [];
   }
   return (data ?? []) as ReviewWithProfile[];
@@ -60,7 +61,7 @@ export async function getPeakReviewStats(
     .eq('peak_id', peakId);
 
   if (error) {
-    console.error('Error fetching review stats:', error);
+    logger.error('Error fetching review stats', { error: error });
     return { avgRating: 0, totalReviews: 0 };
   }
 

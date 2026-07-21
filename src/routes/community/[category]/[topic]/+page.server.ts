@@ -24,9 +24,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 		error(404, 'Topic not found');
 	}
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+	const { data: { user } } = await supabase.auth.getUser();
+	const session = user ? { user } : null;
 
 	const userId = session?.user?.id ?? null;
 
@@ -59,9 +58,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 export const actions: Actions = {
 	createReply: async ({ request, cookies }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in to reply' });
@@ -97,9 +95,8 @@ export const actions: Actions = {
 
 	toggleReaction: async ({ request, cookies }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in to react' });
@@ -130,9 +127,8 @@ export const actions: Actions = {
 
 	toggleBookmark: async ({ request, cookies }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in to bookmark' });
@@ -156,9 +152,8 @@ export const actions: Actions = {
 
 	updateTopic: async ({ request, cookies }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in' });
@@ -187,9 +182,8 @@ export const actions: Actions = {
 
 	updateReply: async ({ request, cookies }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in' });
@@ -214,9 +208,8 @@ export const actions: Actions = {
 
 	deleteTopic: async ({ request, cookies, params }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in' });
@@ -236,9 +229,8 @@ export const actions: Actions = {
 
 	deleteReply: async ({ request, cookies }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in' });

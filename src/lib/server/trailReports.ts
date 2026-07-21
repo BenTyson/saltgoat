@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables, TablesInsert } from '$lib/types/database';
 
@@ -29,7 +30,7 @@ export async function getRecentTrailReports(
     .limit(limit);
 
   if (error) {
-    console.error('Error fetching trail reports:', error);
+    logger.error('Error fetching trail reports', { error: error });
     return [];
   }
 
@@ -52,7 +53,7 @@ export async function getUserTrailReport(
     .single();
 
   if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching user trail report:', error);
+    logger.error('Error fetching user trail report', { error: error });
   }
 
   return data;

@@ -18,7 +18,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     });
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
   const userId = session?.user?.id;
 
   let userIsPro = false;
@@ -85,7 +86,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 export const actions: Actions = {
   uploadTrace: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in to upload traces' });
@@ -111,7 +113,8 @@ export const actions: Actions = {
 
   voteTrace: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in to vote' });
@@ -134,7 +137,8 @@ export const actions: Actions = {
 
   deleteTrace: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in' });

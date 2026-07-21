@@ -2,13 +2,25 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { sendRaw } from '$lib/server/sparrow';
 import { createSupabaseServiceClient } from '$lib/server/supabase';
+import { rateLimit, clientKey } from '$lib/server/rateLimit';
+import { logger } from '$lib/server/logger';
 
 export const load: PageServerLoad = async ({ url }) => {
 	return { sent: url.searchParams.get('sent') === 'true' };
 };
 
 export const actions: Actions = {
-	default: async ({ request }) => {
+	default: async (event) => {
+		const { request } = event;
+
+		// Throttle per IP to prevent contact-form email-bombing.
+		const limit = rateLimit('contact', clientKey(event));
+		if (!limit.allowed) {
+			return fail(429, {
+				error: `Too many messages. Please wait ${limit.retryAfter}s and try again.`
+			});
+		}
+
 		const data = await request.formData();
 
 		// Honeypot — bots fill this, humans don't
@@ -43,7 +55,8 @@ export const actions: Actions = {
 				}),
 				supabase.from('contact_submissions').insert({ name: name || null, email, subject, message })
 			]);
-		} catch {
+		} catch (err) {
+			logger.error('contact form submission failed', { error: err, email });
 			return fail(500, { error: 'Failed to send your message. Please try again.' });
 		}
 

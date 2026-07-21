@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables, TablesInsert } from '$lib/types/database';
 import { optimizeImage } from './imageOptimizer';
@@ -30,7 +31,7 @@ export async function getImagesForPeak(
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching peak images:', error);
+    logger.error('Error fetching peak images', { error: error });
     return [];
   }
 
@@ -138,7 +139,7 @@ export async function deletePeakImage(
     .remove([image.storage_path]);
 
   if (storageError) {
-    console.error('Error deleting from storage:', storageError);
+    logger.error('Error deleting from storage', { error: storageError });
   }
 
   const { error } = await supabase
@@ -247,7 +248,7 @@ export async function getFlaggedImages(
     .order('flag_count', { ascending: false });
 
   if (error) {
-    console.error('Error fetching flagged images:', error);
+    logger.error('Error fetching flagged images', { error: error });
     return [];
   }
 
@@ -327,7 +328,7 @@ export async function getUserPhotos(
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching user photos:', error);
+    logger.error('Error fetching user photos', { error: error });
     return [];
   }
 

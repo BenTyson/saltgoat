@@ -37,7 +37,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
 export const actions: Actions = {
   approveImage: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user || !isAdmin(session.user.id)) {
       return fail(403, { message: 'Admin access required' });
@@ -57,7 +58,8 @@ export const actions: Actions = {
 
   removeImage: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user || !isAdmin(session.user.id)) {
       return fail(403, { message: 'Admin access required' });
@@ -77,7 +79,8 @@ export const actions: Actions = {
 
   resolveFlag: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user || !isAdmin(session.user.id)) {
       return fail(403, { message: 'Admin access required' });
@@ -98,7 +101,8 @@ export const actions: Actions = {
 
   deleteReview: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user || !isAdmin(session.user.id)) {
       return fail(403, { message: 'Admin access required' });
@@ -118,7 +122,8 @@ export const actions: Actions = {
 
   deleteTrailReport: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user || !isAdmin(session.user.id)) {
       return fail(403, { message: 'Admin access required' });
@@ -138,7 +143,8 @@ export const actions: Actions = {
 
   pinForumTopic: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();
@@ -155,7 +161,8 @@ export const actions: Actions = {
 
   lockForumTopic: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();
@@ -172,7 +179,8 @@ export const actions: Actions = {
 
   moveForumTopic: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();
@@ -189,7 +197,8 @@ export const actions: Actions = {
 
   flagImage: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user || !isAdmin(session.user.id)) {
       return fail(403, { message: 'Admin access required' });
@@ -212,7 +221,8 @@ export const actions: Actions = {
 
   deleteForumTopic: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();

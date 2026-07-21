@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ForumSearchResult } from './types';
@@ -29,7 +30,7 @@ export async function searchForum(
 	});
 
 	if (error) {
-		console.error('Error searching forum:', error);
+		logger.error('Error searching forum', { error: error });
 		return [];
 	}
 

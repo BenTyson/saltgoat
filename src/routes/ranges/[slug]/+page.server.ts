@@ -49,7 +49,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
   });
 
   // Get session for user-specific data
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
 
   // Get user's summited peaks if logged in
   let userSummitedPeaks: Record<string, string> = {}; // peakId -> most recent date

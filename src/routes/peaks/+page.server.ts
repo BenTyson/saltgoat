@@ -6,11 +6,13 @@ export const load: PageServerLoad = async ({ cookies }) => {
   const supabase = createSupabaseServerClient(cookies);
 
   try {
-    // Get peaks and session in parallel
-    const [peaks, { data: { session } }] = await Promise.all([
+    // Get peaks and user in parallel. getUser() revalidates the JWT (unlike
+    // getSession); we reshape to a minimal session for downstream checks.
+    const [peaks, { data: { user } }] = await Promise.all([
       getAllPeaks(supabase),
-      supabase.auth.getSession()
+      supabase.auth.getUser()
     ]);
+    const session = user ? { user } : null;
 
     // Get user's summited peak IDs if logged in
     let summitedPeakIds: string[] = [];

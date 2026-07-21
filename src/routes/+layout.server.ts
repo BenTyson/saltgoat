@@ -6,7 +6,12 @@ import { isAdmin } from '$lib/server/admin';
 export const load: LayoutServerLoad = async ({ cookies }) => {
   const supabase = createSupabaseServerClient(cookies);
 
-  const { data: { session } } = await supabase.auth.getSession();
+  // Validate the JWT against the auth server (getUser) before trusting it for
+  // authorization. Only then read the full session object to hand to the client.
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = user
+    ? await supabase.auth.getSession()
+    : { data: { session: null } };
 
   // Get user profile and subscription if logged in
   let profile = null;

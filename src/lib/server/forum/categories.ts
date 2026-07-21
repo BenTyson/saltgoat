@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ForumCategory } from './types';
@@ -12,7 +13,7 @@ export async function getCategories(
 		.order('display_order');
 
 	if (error) {
-		console.error('Error fetching forum categories:', error);
+		logger.error('Error fetching forum categories', { error: error });
 		return [];
 	}
 	return data as ForumCategory[];
@@ -29,7 +30,7 @@ export async function getCategoryBySlug(
 		.single();
 
 	if (error && error.code !== 'PGRST116') {
-		console.error('Error fetching category:', error);
+		logger.error('Error fetching category', { error: error });
 	}
 	return (data as ForumCategory) ?? null;
 }

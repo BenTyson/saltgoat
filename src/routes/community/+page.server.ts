@@ -5,9 +5,8 @@ import { getCategories, getRecentTopics, getPopularTopics, getUserTopicViewTimes
 export const load: PageServerLoad = async ({ cookies }) => {
 	const supabase = createSupabaseServerClient(cookies);
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+	const { data: { user } } = await supabase.auth.getUser();
+	const session = user ? { user } : null;
 
 	const [categories, recentTopics, popularTopics] = await Promise.all([
 		getCategories(supabase),

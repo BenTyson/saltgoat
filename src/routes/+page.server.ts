@@ -10,7 +10,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
   const supabase = createSupabaseServerClient(cookies);
 
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     const [featuredPeaks, allPeaks, profileCount, summitCount] = await Promise.all([
       getFeaturedPeaks(supabase, 5),
@@ -68,7 +69,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
 export const actions: Actions = {
   toggleReaction: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
@@ -81,7 +83,8 @@ export const actions: Actions = {
 
   addComment: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
@@ -95,7 +98,8 @@ export const actions: Actions = {
 
   deleteComment: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();

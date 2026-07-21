@@ -51,7 +51,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 		throw error(404, { message: 'Peak not found' });
 	}
 
-	const { data: { session } } = await supabase.auth.getSession();
+	const { data: { user } } = await supabase.auth.getUser();
+	const session = user ? { user } : null;
 
 	let userIsPro = false;
 	if (session?.user) {

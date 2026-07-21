@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -52,7 +53,7 @@ export async function getPendingFlags(
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching pending flags:', error);
+    logger.error('Error fetching pending flags', { error: error });
     return [];
   }
 

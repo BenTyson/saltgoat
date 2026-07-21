@@ -4,7 +4,8 @@ import { createSupabaseServerClient } from '$lib/server/supabase';
 export const load: PageServerLoad = async ({ cookies }) => {
   const supabase = createSupabaseServerClient(cookies);
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
 
   // Get all peaks with their standard route difficulty
   const { data: peaks } = await supabase

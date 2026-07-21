@@ -24,7 +24,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
   // Check if profile is public (RLS should handle this, but double-check)
   // If user is viewing their own profile, they can always see it
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
   const isOwnProfile = session?.user?.id === userId;
 
   if (!profile.is_public && !isOwnProfile) {
@@ -143,7 +144,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 export const actions: Actions = {
   toggleReaction: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
@@ -156,7 +158,8 @@ export const actions: Actions = {
 
   addComment: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
@@ -170,7 +173,8 @@ export const actions: Actions = {
 
   deleteComment: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();

@@ -6,9 +6,8 @@ import { getCategoryBySlug, createTopic } from '$lib/server/forum';
 export const load: PageServerLoad = async ({ params, cookies, url }) => {
 	const supabase = createSupabaseServerClient(cookies);
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+	const { data: { user } } = await supabase.auth.getUser();
+	const session = user ? { user } : null;
 
 	if (!session?.user) {
 		redirect(303, `/auth?redirect=/community/${params.category}/new`);
@@ -37,9 +36,8 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 export const actions: Actions = {
 	createTopic: async ({ request, cookies, params }) => {
 		const supabase = createSupabaseServerClient(cookies);
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const { data: { user } } = await supabase.auth.getUser();
+		const session = user ? { user } : null;
 
 		if (!session?.user) {
 			return fail(401, { message: 'Must be logged in to create a topic' });

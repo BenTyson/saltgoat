@@ -1,9 +1,16 @@
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/supabase';
 import { createTopic } from '$lib/server/forum';
+import { rateLimit, clientKey, tooManyRequests } from '$lib/server/rateLimit';
+import { logger } from '$lib/server/logger';
 
 /** POST /api/v1/forum/topics — create a new forum topic */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
+	const { request } = event;
+
+	const limit = rateLimit('ugc', clientKey(event));
+	if (!limit.allowed) return tooManyRequests(limit);
+
 	const { supabase, user, error: authError } = await requireAuth(request);
 
 	if (!supabase || !user) {
@@ -55,7 +62,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (e) {
-		console.error('Error creating forum topic:', e);
+		logger.error('Error creating forum topic', { error: e });
 		return new Response(JSON.stringify({ error: 'Failed to create topic' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }

@@ -36,7 +36,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     });
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
 
   let userSummits: Awaited<ReturnType<typeof getUserSummitsForPeak>> = [];
   let userReview: Awaited<ReturnType<typeof getUserReviewForPeak>> = null;
@@ -88,7 +89,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 export const actions: Actions = {
   logSummit: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in to log a summit' });
@@ -137,7 +139,8 @@ export const actions: Actions = {
 
   deleteSummit: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in' });
@@ -161,7 +164,8 @@ export const actions: Actions = {
 
   submitReview: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in to submit a review' });
@@ -204,7 +208,8 @@ export const actions: Actions = {
 
   updateReview: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in' });
@@ -240,7 +245,8 @@ export const actions: Actions = {
 
   deleteReview: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in' });
@@ -264,7 +270,8 @@ export const actions: Actions = {
 
   uploadImage: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in to upload photos' });
@@ -292,7 +299,8 @@ export const actions: Actions = {
 
   deleteImage: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in' });
@@ -329,7 +337,8 @@ export const actions: Actions = {
 
   flagImage: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in to report photos' });
@@ -358,7 +367,8 @@ export const actions: Actions = {
 
   addToWatchlist: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in' });
@@ -382,7 +392,8 @@ export const actions: Actions = {
 
   removeFromWatchlist: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in' });
@@ -406,7 +417,8 @@ export const actions: Actions = {
 
   submitTrailReport: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       return fail(401, { message: 'Must be logged in to submit a trail report' });

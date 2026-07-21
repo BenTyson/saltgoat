@@ -60,7 +60,8 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 export const actions: Actions = {
   approvePhoto: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();
@@ -71,7 +72,8 @@ export const actions: Actions = {
 
   removePhoto: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();
@@ -82,7 +84,8 @@ export const actions: Actions = {
 
   deleteReview: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();
@@ -93,7 +96,8 @@ export const actions: Actions = {
 
   deleteTrailReport: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();
@@ -104,7 +108,8 @@ export const actions: Actions = {
 
   deleteTrace: async ({ request, cookies }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user || !isAdmin(session.user.id)) return fail(403);
 
     const formData = await request.formData();

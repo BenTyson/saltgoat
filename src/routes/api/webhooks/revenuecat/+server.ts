@@ -3,6 +3,9 @@ import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import { createSupabaseServiceClient } from '$lib/server/supabase';
 import { sendRaw } from '$lib/server/sparrow';
+import { safeBearerEqual } from '$lib/server/security';
+import { rateLimit, clientKey, tooManyRequests } from '$lib/server/rateLimit';
+import { logger } from '$lib/server/logger';
 
 interface RevenueCatEvent {
 	type: string;
@@ -23,59 +26,72 @@ function getPlatform(store?: string): string | null {
 	return null;
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
+	const { request } = event;
+
+	const limit = rateLimit('webhook', clientKey(event));
+	if (!limit.allowed) return tooManyRequests(limit);
+
 	const secret = env.REVENUECAT_WEBHOOK_SECRET;
 	if (!secret) {
 		return json({ error: 'Webhook not configured' }, { status: 500 });
 	}
 
 	const authHeader = request.headers.get('Authorization');
-	if (authHeader !== `Bearer ${secret}`) {
+	if (!safeBearerEqual(authHeader, secret)) {
 		return json({ error: 'Invalid authorization' }, { status: 401 });
 	}
 
 	const body = (await request.json()) as RevenueCatWebhook;
-	const event = body.event;
-	if (!event?.type || !event?.app_user_id) {
+	const rcEvent = body.event;
+	if (!rcEvent?.type || !rcEvent?.app_user_id) {
 		return json({ error: 'Invalid payload' }, { status: 400 });
 	}
 
 	const supabase = createSupabaseServiceClient();
-	const userId = event.app_user_id;
+	const userId = rcEvent.app_user_id;
 	const now = new Date().toISOString();
 
-	switch (event.type) {
+	// Each case sets `dbError` from its write. If any write fails we log with
+	// context and return 5xx so RevenueCat retries (it retries non-2xx up to 24h).
+	// The upserts/updates are idempotent (keyed on user_id), so retries are safe.
+	let dbError: { message: string; code?: string } | null = null;
+
+	switch (rcEvent.type) {
 		case 'INITIAL_PURCHASE': {
-			const periodEnd = event.expiration_at_ms
-				? new Date(event.expiration_at_ms).toISOString()
+			const periodEnd = rcEvent.expiration_at_ms
+				? new Date(rcEvent.expiration_at_ms).toISOString()
 				: null;
 
-			await supabase.from('user_subscriptions').upsert(
+			const { error } = await supabase.from('user_subscriptions').upsert(
 				{
 					user_id: userId,
 					plan: 'pro',
 					status: 'active',
-					platform: getPlatform(event.store),
-					app_store_transaction_id: event.original_transaction_id ?? null,
+					platform: getPlatform(rcEvent.store),
+					app_store_transaction_id: rcEvent.original_transaction_id ?? null,
 					revenuecat_id: userId,
 					current_period_end: periodEnd,
 					updated_at: now
 				},
 				{ onConflict: 'user_id' }
 			);
+			dbError = error;
 
 			// Send Pro upgrade email — non-blocking, failure doesn't affect webhook response
-			sendProUpgradeEmail(supabase, userId).catch((err) =>
-				console.error('Pro upgrade email failed:', err)
-			);
+			if (!error) {
+				sendProUpgradeEmail(supabase, userId).catch((err) =>
+					logger.error('Pro upgrade email failed', { error: err, userId })
+				);
+			}
 			break;
 		}
 		case 'RENEWAL': {
-			const periodEnd = event.expiration_at_ms
-				? new Date(event.expiration_at_ms).toISOString()
+			const periodEnd = rcEvent.expiration_at_ms
+				? new Date(rcEvent.expiration_at_ms).toISOString()
 				: null;
 
-			await supabase
+			const { error } = await supabase
 				.from('user_subscriptions')
 				.update({
 					status: 'active',
@@ -83,20 +99,22 @@ export const POST: RequestHandler = async ({ request }) => {
 					updated_at: now
 				})
 				.eq('user_id', userId);
+			dbError = error;
 			break;
 		}
 		case 'CANCELLATION': {
-			await supabase
+			const { error } = await supabase
 				.from('user_subscriptions')
 				.update({
 					status: 'canceled',
 					updated_at: now
 				})
 				.eq('user_id', userId);
+			dbError = error;
 			break;
 		}
 		case 'EXPIRATION': {
-			await supabase
+			const { error } = await supabase
 				.from('user_subscriptions')
 				.update({
 					plan: 'free',
@@ -104,18 +122,37 @@ export const POST: RequestHandler = async ({ request }) => {
 					updated_at: now
 				})
 				.eq('user_id', userId);
+			dbError = error;
 			break;
 		}
 		case 'BILLING_ISSUE_DETECTED': {
-			await supabase
+			const { error } = await supabase
 				.from('user_subscriptions')
 				.update({
 					status: 'past_due',
 					updated_at: now
 				})
 				.eq('user_id', userId);
+			dbError = error;
 			break;
 		}
+		default: {
+			// Unknown/unhandled event type — record it instead of silently 200-ing.
+			logger.info('revenuecat webhook: unhandled event type', {
+				type: rcEvent.type,
+				userId
+			});
+		}
+	}
+
+	if (dbError) {
+		// A paying customer must not silently miss Pro. Log + 5xx forces a retry.
+		logger.error('revenuecat webhook: subscription write failed', {
+			error: dbError,
+			eventType: rcEvent.type,
+			userId
+		});
+		return json({ error: 'Subscription update failed' }, { status: 500 });
 	}
 
 	return json({ received: true });

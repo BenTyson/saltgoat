@@ -30,7 +30,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
     .eq('routes.is_standard', true);
 
   // Get session for user-specific data
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
 
   // Get user's summited peaks if logged in
   let userSummitedPeaks: Set<string> = new Set();

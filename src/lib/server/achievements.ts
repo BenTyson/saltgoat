@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables } from '$lib/types/database';
 import {
@@ -37,7 +38,7 @@ export async function getUserAchievements(
     .order('earned_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching achievements:', error);
+    logger.error('Error fetching achievements', { error: error });
     return [];
   }
 
@@ -191,7 +192,7 @@ export async function checkAndAwardAchievements(
     );
 
     if (error) {
-      console.error('Error awarding achievements:', error);
+      logger.error('Error awarding achievements', { error: error });
       return [];
     }
   }
@@ -272,7 +273,7 @@ export async function markAchievementsNotified(
     .eq('notified', false);
 
   if (error) {
-    console.error('Error marking achievements notified:', error);
+    logger.error('Error marking achievements notified', { error: error });
   }
 }
 
@@ -288,7 +289,7 @@ export async function getUnnotifiedCount(
     .eq('notified', false);
 
   if (error) {
-    console.error('Error counting unnotified:', error);
+    logger.error('Error counting unnotified', { error: error });
     return 0;
   }
 

@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables, TablesInsert } from '$lib/types/database';
 
@@ -173,7 +174,7 @@ export async function getUserPlannedTrips(
   const { data: trips, error } = await query;
 
   if (error) {
-    console.error('Error fetching planned trips:', error);
+    logger.error('Error fetching planned trips', { error: error });
     return [];
   }
 
@@ -239,7 +240,7 @@ export async function getPlannedTrip(
     .single();
 
   if (error) {
-    console.error('Error fetching planned trip:', error);
+    logger.error('Error fetching planned trip', { error: error });
     return null;
   }
 

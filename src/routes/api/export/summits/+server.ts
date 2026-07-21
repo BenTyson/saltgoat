@@ -6,7 +6,8 @@ import { getUserSummits } from '$lib/server/summits';
 
 export const GET: RequestHandler = async ({ cookies }) => {
   const supabase = createSupabaseServerClient(cookies);
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
 
   if (!session?.user) {
     throw error(401, 'Must be logged in');

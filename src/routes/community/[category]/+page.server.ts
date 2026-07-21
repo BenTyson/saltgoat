@@ -13,9 +13,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
 	const { topics, nextCursor } = await getTopicsByCategory(supabase, category.id, { limit: 20 });
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+	const { data: { user } } = await supabase.auth.getUser();
+	const session = user ? { user } : null;
 	const userId = session?.user?.id ?? null;
 
 	let topicViews: Record<string, string> = {};

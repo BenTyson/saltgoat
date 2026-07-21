@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 /**
  * GPX Parser Utility
  * Parses GPX files to GeoJSON and calculates elevation statistics
@@ -92,7 +93,7 @@ export function parseGPX(gpxContent: string): TrailGeometry | null {
       }
     };
   } catch (error) {
-    console.error('Error parsing GPX:', error);
+    logger.error('Error parsing GPX', { error: error });
     return null;
   }
 }

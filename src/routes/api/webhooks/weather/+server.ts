@@ -6,6 +6,9 @@
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 import { createSupabaseServiceClient } from '$lib/server/supabase';
+import { safeSecretEqual } from '$lib/server/security';
+import { rateLimit, clientKey, tooManyRequests } from '$lib/server/rateLimit';
+import { logger } from '$lib/server/logger';
 import {
   fetchWeatherForPeak,
   upsertConditions,
@@ -79,14 +82,20 @@ async function processPeak(
   return { v2Success, v1Success };
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async (event) => {
+  const { request } = event;
+
+  // Rate limit secret-check attempts per IP to blunt brute-force.
+  const limit = rateLimit('webhook', clientKey(event));
+  if (!limit.allowed) return tooManyRequests(limit);
+
   const webhookSecret = env.WEBHOOK_SECRET;
   const secret =
     request.headers.get('x-webhook-secret') ||
     request.headers.get('X-Webhook-Secret') ||
     request.headers.get('X-WEBHOOK-SECRET');
 
-  if (!webhookSecret || secret !== webhookSecret) {
+  if (!webhookSecret || !safeSecretEqual(secret, webhookSecret)) {
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -167,9 +176,14 @@ export const POST: RequestHandler = async ({ request }) => {
     await cleanStaleForecasts(supabase);
 
     const duration = Date.now() - startTime;
-    console.log(
-      `Weather fetch complete: ${v2Success} v2, ${v1Success} v1 legacy, ${errorCount} errors in ${duration}ms`
-    );
+    // One structured line per cron run so weather-pipeline health is grep-able.
+    logger.info('weather webhook run complete', {
+      v2Success,
+      v1Success,
+      errorCount,
+      peakCount: peaksWithTrailhead.length,
+      durationMs: duration
+    });
 
     return new Response(
       JSON.stringify({
@@ -186,7 +200,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     );
   } catch (error) {
-    console.error('Weather webhook error:', error);
+    logger.error('weather webhook error', { error });
     return new Response(
       JSON.stringify({
         success: false,
@@ -201,17 +215,23 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 // Support GET for manual testing
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async (event) => {
+  const { url } = event;
+
+  const limit = rateLimit('webhook', clientKey(event));
+  if (!limit.allowed) return tooManyRequests(limit);
+
   const secret = url.searchParams.get('secret');
   const webhookSecret = env.WEBHOOK_SECRET;
 
-  if (!webhookSecret || secret !== webhookSecret) {
+  if (!webhookSecret || !safeSecretEqual(secret, webhookSecret)) {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  // safeSecretEqual guarantees `secret` is a non-null string past the guard above.
   const request = new Request(url, {
     method: 'POST',
-    headers: { 'x-webhook-secret': secret }
+    headers: { 'x-webhook-secret': secret as string }
   });
 
   return POST({ request, url } as Parameters<RequestHandler>[0]);

@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { redirect } from '@sveltejs/kit';
@@ -122,7 +123,7 @@ export async function getAdminUserList(
 
 	const { data, count, error } = await query;
 	if (error) {
-		console.error('Error fetching admin user list:', error);
+		logger.error('Error fetching admin user list', { error: error });
 		return { users: [], total: 0 };
 	}
 
@@ -204,7 +205,7 @@ export async function getAdminPhotos(
 
 	const { data, count, error } = await query;
 	if (error) {
-		console.error('Error fetching admin photos:', error);
+		logger.error('Error fetching admin photos', { error: error });
 		return { items: [], total: 0 };
 	}
 
@@ -265,7 +266,7 @@ export async function getAdminReviews(
 		.range(offset, offset + limit - 1);
 
 	if (error) {
-		console.error('Error fetching admin reviews:', error);
+		logger.error('Error fetching admin reviews', { error: error });
 		return { items: [], total: 0 };
 	}
 
@@ -323,7 +324,7 @@ export async function getAdminTrailReports(
 		.range(offset, offset + limit - 1);
 
 	if (error) {
-		console.error('Error fetching admin trail reports:', error);
+		logger.error('Error fetching admin trail reports', { error: error });
 		return { items: [], total: 0 };
 	}
 
@@ -379,7 +380,7 @@ export async function getAdminTraces(
 		.range(offset, offset + limit - 1);
 
 	if (error) {
-		console.error('Error fetching admin traces:', error);
+		logger.error('Error fetching admin traces', { error: error });
 		return { items: [], total: 0 };
 	}
 
@@ -509,7 +510,7 @@ export async function getResolvedFlags(
 		.limit(limit);
 
 	if (error) {
-		console.error('Error fetching resolved flags:', error);
+		logger.error('Error fetching resolved flags', { error: error });
 		return [];
 	}
 

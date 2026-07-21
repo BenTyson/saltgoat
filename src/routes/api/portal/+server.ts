@@ -6,7 +6,8 @@ import { createPortalSession } from '$lib/server/stripe';
 
 export const POST: RequestHandler = async ({ cookies, url }) => {
   const supabase = createSupabaseServerClient(cookies);
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
 
   if (!session?.user) {
     throw redirect(303, '/auth');

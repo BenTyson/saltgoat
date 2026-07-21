@@ -16,7 +16,8 @@ import { redirect, fail } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ cookies, url }) => {
   const supabase = createSupabaseServerClient(cookies);
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
 
   if (!session?.user) {
     throw redirect(303, '/auth');
@@ -200,7 +201,8 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 export const actions: Actions = {
   updatePrivacy: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');
@@ -223,7 +225,8 @@ export const actions: Actions = {
 
   updateProfile: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');
@@ -260,7 +263,8 @@ export const actions: Actions = {
 
   follow: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');
@@ -284,7 +288,8 @@ export const actions: Actions = {
 
   unfollow: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');
@@ -308,7 +313,8 @@ export const actions: Actions = {
 
   createTrip: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');
@@ -352,7 +358,8 @@ export const actions: Actions = {
 
   toggleTripVisibility: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');
@@ -379,7 +386,8 @@ export const actions: Actions = {
 
   removeFromWatchlist: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');
@@ -403,7 +411,8 @@ export const actions: Actions = {
 
   toggleReaction: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
@@ -416,7 +425,8 @@ export const actions: Actions = {
 
   addComment: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
@@ -430,7 +440,8 @@ export const actions: Actions = {
 
   deleteComment: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
     if (!session?.user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
@@ -443,7 +454,8 @@ export const actions: Actions = {
 
   deleteTrip: async ({ cookies, request }) => {
     const supabase = createSupabaseServerClient(cookies);
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    const session = user ? { user } : null;
 
     if (!session?.user) {
       throw redirect(303, '/auth');

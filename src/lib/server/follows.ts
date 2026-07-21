@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables } from '$lib/types/database';
 
@@ -58,7 +59,7 @@ export async function getFollowing(
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching following:', error);
+    logger.error('Error fetching following', { error: error });
     return [];
   }
 
@@ -86,7 +87,7 @@ export async function getFollowers(
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching followers:', error);
+    logger.error('Error fetching followers', { error: error });
     return [];
   }
 

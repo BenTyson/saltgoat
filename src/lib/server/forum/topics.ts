@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ForumTopicWithAuthor, TopicDetail } from './types';
@@ -145,7 +146,7 @@ export async function getTopicDetail(
 		.single();
 
 	if (error) {
-		if (error.code !== 'PGRST116') console.error('Error fetching topic:', error);
+		if (error.code !== 'PGRST116') logger.error('Error fetching topic', { error: error });
 		return null;
 	}
 
@@ -177,7 +178,7 @@ export async function getTopicBySlug(
 		.single();
 
 	if (error) {
-		if (error.code !== 'PGRST116') console.error('Error fetching topic by slug:', error);
+		if (error.code !== 'PGRST116') logger.error('Error fetching topic by slug', { error: error });
 		return null;
 	}
 

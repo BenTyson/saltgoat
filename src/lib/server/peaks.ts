@@ -1,3 +1,4 @@
+import { logger } from '$lib/server/logger';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Peak, Route, PeakWithRoutes, PeakWithStandardRoute } from '$lib/types/database';
 
@@ -32,7 +33,7 @@ export async function getAllPeaks(
     .order('rank', { ascending: true });
 
   if (error) {
-    console.error('Error fetching peaks:', error);
+    logger.error('Error fetching peaks', { error: error });
     throw error;
   }
 
@@ -73,7 +74,7 @@ export async function getPeakBySlug(
       // Not found
       return null;
     }
-    console.error('Error fetching peak:', error);
+    logger.error('Error fetching peak', { error: error });
     throw error;
   }
 
@@ -100,7 +101,7 @@ export async function getRouteBySlug(
     if (peakError.code === 'PGRST116') {
       return null;
     }
-    console.error('Error fetching peak:', peakError);
+    logger.error('Error fetching peak', { error: peakError });
     throw peakError;
   }
 
@@ -118,7 +119,7 @@ export async function getRouteBySlug(
     if (routeError.code === 'PGRST116') {
       return null;
     }
-    console.error('Error fetching route:', routeError);
+    logger.error('Error fetching route', { error: routeError });
     throw routeError;
   }
 
@@ -157,7 +158,7 @@ export async function getRelatedPeaks(
     .order('rank', { ascending: true });
 
   if (error) {
-    console.error('Error fetching related peaks:', error);
+    logger.error('Error fetching related peaks', { error: error });
     throw error;
   }
 

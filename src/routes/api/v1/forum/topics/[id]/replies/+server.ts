@@ -1,6 +1,8 @@
 import type { RequestHandler } from './$types';
 import { createSupabaseApiClient, createSupabaseServerClient, requireAuth } from '$lib/server/supabase';
 import { getReplies, createReply, getReactionsForPosts } from '$lib/server/forum';
+import { rateLimit, clientKey, tooManyRequests } from '$lib/server/rateLimit';
+import { logger } from '$lib/server/logger';
 
 /** GET /api/v1/forum/topics/[id]/replies — paginated replies */
 export const GET: RequestHandler = async ({ params, url, cookies, request }) => {
@@ -33,7 +35,12 @@ export const GET: RequestHandler = async ({ params, url, cookies, request }) => 
 };
 
 /** POST /api/v1/forum/topics/[id]/replies — create a reply */
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async (event) => {
+	const { params, request } = event;
+
+	const limit = rateLimit('ugc', clientKey(event));
+	if (!limit.allowed) return tooManyRequests(limit);
+
 	const { supabase, user, error: authError } = await requireAuth(request);
 
 	if (!supabase || !user) {
@@ -74,7 +81,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 			headers: { 'Content-Type': 'application/json' }
 		});
 	} catch (e) {
-		console.error('Error creating reply:', e);
+		logger.error('Error creating reply', { error: e });
 		return new Response(JSON.stringify({ error: 'Failed to create reply' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }

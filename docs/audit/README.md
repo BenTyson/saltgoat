@@ -73,6 +73,11 @@ Legend: ⬜ Not started · 🟡 In progress · ✅ Report delivered · 🔵 Back
   the shared pkg with `2>/dev/null`.
 - **2026-07-13** · T1-11 (/pricing unreachable) · 🔧 Sonnet · ✅ added Pricing to `Header.svelte` navLinks
   + `Footer.svelte`. Build green. Uncommitted, ready for review.
+- **2026-07-13** · Session 2 — T1-3/T1-4/T1-5/T1-7/T1-8 · 🧠 Opus · ✅ shipped in `2d26df4`. Constant-time
+  webhook secrets (`security.ts`), RevenueCat 5xx-on-DB-error, `getSession()`→`getUser()` across 75 authz
+  sites/24 files, `handleError` hook + `logger.ts` (Sentry-seam), in-memory rate limiting (`rateLimit.ts`).
+  Verified: build 0, check 31, logged-out smoke (public 200 · /profile→/auth 303 · /admin→/ 302).
+  **Authed path pending verification on deploy.**
 - **Open (Tier 0, 👤 you):** T0-1 Stripe price id · T0-2 weather cron · T0-3 SPARROW_URL · T0-4 real
-  secrets · T0-6 delete forum garbage · T0-7 Open-Meteo key. **Deferred to Session 2:** T0-5/T1-6 secret
-  rotation (lockstep w/ trigger migration).
+  secrets · T0-6 delete forum garbage · T0-7 Open-Meteo key.
+- **Deferred → Session 3:** T0-5/T1-6 secret rotation (needs Supabase CLI install + lockstep dashboard flip).

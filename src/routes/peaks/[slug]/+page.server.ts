@@ -1,5 +1,4 @@
 import type { PageServerLoad, Actions } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getPeakBySlug, getRelatedPeaks } from '$lib/server/peaks';
 import { getUserSummitsForPeak, createSummit, deleteSummit } from '$lib/server/summits';
 import { canLogSummit } from '$lib/server/subscriptions';
@@ -25,8 +24,8 @@ import { isOnWatchlist, addToWatchlist, removeFromWatchlist } from '$lib/server/
 import { getTopicsForPeak } from '$lib/server/forum';
 import { error, fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ params, locals }) => {
+  const { supabase } = locals;
 
   const peak = await getPeakBySlug(supabase, params.slug);
 
@@ -36,8 +35,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     });
   }
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
+  const { user } = await locals.safeGetSession();
 
   let userSummits: Awaited<ReturnType<typeof getUserSummitsForPeak>> = [];
   let userReview: Awaited<ReturnType<typeof getUserReviewForPeak>> = null;
@@ -45,12 +43,12 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
   let summitLimit: { allowed: boolean; remaining: number; isPro: boolean } | null = null;
   let isWatched = false;
 
-  if (session?.user) {
+  if (user) {
     [userSummits, userReview, summitLimit, isWatched] = await Promise.all([
-      getUserSummitsForPeak(supabase, session.user.id, peak.id),
-      getUserReviewForPeak(supabase, session.user.id, peak.id),
-      canLogSummit(supabase, session.user.id),
-      isOnWatchlist(supabase, session.user.id, peak.id)
+      getUserSummitsForPeak(supabase, user.id, peak.id),
+      getUserReviewForPeak(supabase, user.id, peak.id),
+      canLogSummit(supabase, user.id),
+      isOnWatchlist(supabase, user.id, peak.id)
     ]);
   }
 
@@ -68,9 +66,9 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
   return {
     peak,
     userSummits,
-    isLoggedIn: !!session,
-    currentUserId: session?.user?.id,
-    isAdmin: isAdmin(session?.user?.id),
+    isLoggedIn: !!user,
+    currentUserId: user?.id,
+    isAdmin: isAdmin(user?.id),
     reviews,
     userReview,
     avgRating: reviewStats.avgRating,
@@ -87,12 +85,11 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 };
 
 export const actions: Actions = {
-  logSummit: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  logSummit: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in to log a summit' });
     }
 
@@ -110,14 +107,14 @@ export const actions: Actions = {
       return fail(400, { message: 'Peak ID and date are required' });
     }
 
-    const summitCheck = await canLogSummit(supabase, session.user.id);
+    const summitCheck = await canLogSummit(supabase, user.id);
     if (!summitCheck.allowed) {
       return fail(403, { limitReached: true, remaining: 0 });
     }
 
     try {
       await createSummit(supabase, {
-        user_id: session.user.id,
+        user_id: user.id,
         peak_id: peakId,
         date_summited: dateSummited,
         route_id: routeId || null,
@@ -128,7 +125,7 @@ export const actions: Actions = {
         party_size: partySize ? parseInt(partySize, 10) : null
       });
 
-      const newAchievements = await checkAndAwardAchievements(supabase, session.user.id, 'summit');
+      const newAchievements = await checkAndAwardAchievements(supabase, user.id, 'summit');
 
       return { success: true, newAchievements };
     } catch (e) {
@@ -137,12 +134,11 @@ export const actions: Actions = {
     }
   },
 
-  deleteSummit: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  deleteSummit: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in' });
     }
 
@@ -162,12 +158,11 @@ export const actions: Actions = {
     }
   },
 
-  submitReview: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  submitReview: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in to submit a review' });
     }
 
@@ -185,7 +180,7 @@ export const actions: Actions = {
 
     try {
       await createReview(supabase, {
-        user_id: session.user.id,
+        user_id: user.id,
         peak_id: peakId,
         rating,
         title: title || null,
@@ -194,7 +189,7 @@ export const actions: Actions = {
         conditions: conditions || null
       });
 
-      const newAchievements = await checkAndAwardAchievements(supabase, session.user.id, 'review');
+      const newAchievements = await checkAndAwardAchievements(supabase, user.id, 'review');
 
       return { success: true, newAchievements };
     } catch (e: any) {
@@ -206,12 +201,11 @@ export const actions: Actions = {
     }
   },
 
-  updateReview: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  updateReview: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in' });
     }
 
@@ -243,12 +237,11 @@ export const actions: Actions = {
     }
   },
 
-  deleteReview: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  deleteReview: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in' });
     }
 
@@ -268,12 +261,11 @@ export const actions: Actions = {
     }
   },
 
-  uploadImage: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  uploadImage: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in to upload photos' });
     }
 
@@ -289,7 +281,7 @@ export const actions: Actions = {
     }
 
     try {
-      await uploadPeakImage(supabase, peakId, session.user.id, file, caption || undefined, isPrivate, category || undefined);
+      await uploadPeakImage(supabase, peakId, user.id, file, caption || undefined, isPrivate, category || undefined);
       return { success: true };
     } catch (e) {
       console.error('Error uploading image:', e);
@@ -297,12 +289,11 @@ export const actions: Actions = {
     }
   },
 
-  deleteImage: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  deleteImage: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in' });
     }
 
@@ -314,14 +305,14 @@ export const actions: Actions = {
     }
 
     // Verify ownership or admin
-    if (!isAdmin(session.user.id)) {
+    if (!isAdmin(user.id)) {
       const { data: image } = await supabase
         .from('peak_images')
         .select('uploaded_by')
         .eq('id', imageId)
         .single();
 
-      if (image?.uploaded_by !== session.user.id) {
+      if (image?.uploaded_by !== user.id) {
         return fail(403, { message: 'Can only delete your own photos' });
       }
     }
@@ -335,12 +326,11 @@ export const actions: Actions = {
     }
   },
 
-  flagImage: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  flagImage: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in to report photos' });
     }
 
@@ -354,7 +344,7 @@ export const actions: Actions = {
     }
 
     try {
-      await flagImage(supabase, imageId, session.user.id, reason, details || undefined);
+      await flagImage(supabase, imageId, user.id, reason, details || undefined);
       return { success: true };
     } catch (e: any) {
       if (e.message === 'You have already reported this photo') {
@@ -365,12 +355,11 @@ export const actions: Actions = {
     }
   },
 
-  addToWatchlist: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  addToWatchlist: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in' });
     }
 
@@ -382,7 +371,7 @@ export const actions: Actions = {
     }
 
     try {
-      await addToWatchlist(supabase, session.user.id, peakId);
+      await addToWatchlist(supabase, user.id, peakId);
       return { success: true };
     } catch (e) {
       console.error('Error adding to watchlist:', e);
@@ -390,12 +379,11 @@ export const actions: Actions = {
     }
   },
 
-  removeFromWatchlist: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  removeFromWatchlist: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in' });
     }
 
@@ -407,7 +395,7 @@ export const actions: Actions = {
     }
 
     try {
-      await removeFromWatchlist(supabase, session.user.id, peakId);
+      await removeFromWatchlist(supabase, user.id, peakId);
       return { success: true };
     } catch (e) {
       console.error('Error removing from watchlist:', e);
@@ -415,12 +403,11 @@ export const actions: Actions = {
     }
   },
 
-  submitTrailReport: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  submitTrailReport: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in to submit a trail report' });
     }
 
@@ -441,7 +428,7 @@ export const actions: Actions = {
 
     try {
       await createTrailReport(supabase, {
-        user_id: session.user.id,
+        user_id: user.id,
         peak_id: peakId,
         hike_date: hikeDate,
         trail_status: trailStatus || null,
@@ -453,7 +440,7 @@ export const actions: Actions = {
         notes: notes || null
       });
 
-      const newAchievements = await checkAndAwardAchievements(supabase, session.user.id, 'trail_report');
+      const newAchievements = await checkAndAwardAchievements(supabase, user.id, 'trail_report');
 
       return { success: true, newAchievements };
     } catch (e) {

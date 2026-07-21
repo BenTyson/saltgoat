@@ -1,15 +1,13 @@
 import type { Actions, PageServerLoad } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getCategoryBySlug, createTopic } from '$lib/server/forum';
 
-export const load: PageServerLoad = async ({ params, cookies, url }) => {
-	const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ params, locals, url }) => {
+	const { supabase } = locals;
 
-	const { data: { user } } = await supabase.auth.getUser();
-	const session = user ? { user } : null;
+	const { user } = await locals.safeGetSession();
 
-	if (!session?.user) {
+	if (!user) {
 		redirect(303, `/auth?redirect=/community/${params.category}/new`);
 	}
 
@@ -34,12 +32,11 @@ export const load: PageServerLoad = async ({ params, cookies, url }) => {
 };
 
 export const actions: Actions = {
-	createTopic: async ({ request, cookies, params }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	createTopic: async ({ request, locals, params }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in to create a topic' });
 		}
 
@@ -67,7 +64,7 @@ export const actions: Actions = {
 				title,
 				body,
 				categoryId,
-				authorId: session.user.id,
+				authorId: user.id,
 				peakId
 			});
 

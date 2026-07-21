@@ -9,8 +9,8 @@ export function isAdmin(userId: string | undefined): boolean {
 	return userId === ADMIN_USER_ID;
 }
 
-export function assertAdmin(session: { user?: { id: string } } | null): void {
-	if (!session?.user || !isAdmin(session.user.id)) {
+export function assertAdmin(user: { id: string } | null | undefined): void {
+	if (!user || !isAdmin(user.id)) {
 		throw redirect(302, '/');
 	}
 }

@@ -1,25 +1,21 @@
 import type { LayoutServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getSubscription, type Subscription } from '$lib/server/subscriptions';
 import { isAdmin } from '$lib/server/admin';
 
-export const load: LayoutServerLoad = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: LayoutServerLoad = async ({ locals }) => {
+  const { supabase } = locals;
 
-  // Validate the JWT against the auth server (getUser) before trusting it for
-  // authorization. Only then read the full session object to hand to the client.
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: { session } } = user
-    ? await supabase.auth.getSession()
-    : { data: { session: null } };
+  // Single validated auth read for the whole request (getUser under the hood).
+  // The real session is returned to the client — Header depends on it.
+  const { session, user } = await locals.safeGetSession();
 
   // Get user profile and subscription if logged in
   let profile = null;
   let subscription: Subscription | null = null;
-  if (session?.user) {
+  if (user) {
     const [profileResult, sub] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', session.user.id).single(),
-      getSubscription(supabase, session.user.id)
+      supabase.from('profiles').select('*').eq('id', user.id).single(),
+      getSubscription(supabase, user.id)
     ]);
     profile = profileResult.data;
     subscription = sub;
@@ -36,6 +32,6 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
     profile,
     subscription,
     peaks: peaks ?? [],
-    isAdmin: isAdmin(session?.user?.id)
+    isAdmin: isAdmin(user?.id)
   };
 };

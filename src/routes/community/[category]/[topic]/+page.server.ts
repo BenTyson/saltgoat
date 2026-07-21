@@ -1,6 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import {
 	getTopicBySlug,
 	getReplies,
@@ -16,18 +15,17 @@ import {
 	getBookmarkStatus
 } from '$lib/server/forum';
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
-	const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ params, locals }) => {
+	const { supabase } = locals;
 
 	const topic = await getTopicBySlug(supabase, params.category, params.topic);
 	if (!topic) {
 		error(404, 'Topic not found');
 	}
 
-	const { data: { user } } = await supabase.auth.getUser();
-	const session = user ? { user } : null;
+	const { user } = await locals.safeGetSession();
 
-	const userId = session?.user?.id ?? null;
+	const userId = user?.id ?? null;
 
 	const { replies, nextCursor } = await getReplies(supabase, topic.id, { limit: 30 });
 
@@ -50,18 +48,17 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 		topicReactions: topicReactions[topic.id] ?? { counts: {}, userReactions: [] },
 		replyReactions,
 		isBookmarked: bookmarkStatus[topic.id] ?? false,
-		isLoggedIn: !!session,
+		isLoggedIn: !!user,
 		currentUserId: userId
 	};
 };
 
 export const actions: Actions = {
-	createReply: async ({ request, cookies }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	createReply: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in to reply' });
 		}
 
@@ -82,7 +79,7 @@ export const actions: Actions = {
 		try {
 			await createReply(supabase, {
 				topicId,
-				authorId: session.user.id,
+				authorId: user.id,
 				body: trimmedBody,
 				replyToId
 			});
@@ -93,12 +90,11 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	toggleReaction: async ({ request, cookies }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	toggleReaction: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in to react' });
 		}
 
@@ -115,7 +111,7 @@ export const actions: Actions = {
 			await toggleForumReaction(supabase, {
 				reactableType,
 				reactableId,
-				userId: session.user.id,
+				userId: user.id,
 				reactionType
 			});
 		} catch (err) {
@@ -125,12 +121,11 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	toggleBookmark: async ({ request, cookies }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	toggleBookmark: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in to bookmark' });
 		}
 
@@ -142,7 +137,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await toggleBookmark(supabase, topicId, session.user.id);
+			await toggleBookmark(supabase, topicId, user.id);
 		} catch (err) {
 			return fail(500, { message: 'Failed to toggle bookmark' });
 		}
@@ -150,12 +145,11 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	updateTopic: async ({ request, cookies }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	updateTopic: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in' });
 		}
 
@@ -172,7 +166,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await updateTopic(supabase, topicId, session.user.id, { title, body });
+			await updateTopic(supabase, topicId, user.id, { title, body });
 		} catch (err) {
 			return fail(500, { message: 'Failed to update topic' });
 		}
@@ -180,12 +174,11 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	updateReply: async ({ request, cookies }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	updateReply: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in' });
 		}
 
@@ -198,7 +191,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await updateReply(supabase, replyId, session.user.id, { body });
+			await updateReply(supabase, replyId, user.id, { body });
 		} catch (err) {
 			return fail(500, { message: 'Failed to update reply' });
 		}
@@ -206,12 +199,11 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	deleteTopic: async ({ request, cookies, params }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	deleteTopic: async ({ request, locals, params }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in' });
 		}
 
@@ -219,7 +211,7 @@ export const actions: Actions = {
 		const topicId = formData.get('topic_id') as string;
 
 		try {
-			await deleteTopic(supabase, topicId, session.user.id);
+			await deleteTopic(supabase, topicId, user.id);
 		} catch (err) {
 			return fail(500, { message: 'Failed to delete topic' });
 		}
@@ -227,12 +219,11 @@ export const actions: Actions = {
 		redirect(303, `/community/${params.category}`);
 	},
 
-	deleteReply: async ({ request, cookies }) => {
-		const supabase = createSupabaseServerClient(cookies);
-		const { data: { user } } = await supabase.auth.getUser();
-		const session = user ? { user } : null;
+	deleteReply: async ({ request, locals }) => {
+		const { supabase } = locals;
+		const { user } = await locals.safeGetSession();
 
-		if (!session?.user) {
+		if (!user) {
 			return fail(401, { message: 'Must be logged in' });
 		}
 
@@ -240,7 +231,7 @@ export const actions: Actions = {
 		const replyId = formData.get('reply_id') as string;
 
 		try {
-			await deleteReply(supabase, replyId, session.user.id);
+			await deleteReply(supabase, replyId, user.id);
 		} catch (err) {
 			return fail(500, { message: 'Failed to delete reply' });
 		}

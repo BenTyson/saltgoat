@@ -1,33 +1,31 @@
 import type { PageServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getAllPeaks } from '$lib/server/peaks';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ locals }) => {
+  const { supabase } = locals;
 
   try {
-    // Get peaks and user in parallel. getUser() revalidates the JWT (unlike
-    // getSession); we reshape to a minimal session for downstream checks.
-    const [peaks, { data: { user } }] = await Promise.all([
+    // Get peaks and the validated user in parallel. safeGetSession() runs the
+    // single per-request getUser() (memoized in hooks).
+    const [peaks, { user }] = await Promise.all([
       getAllPeaks(supabase),
-      supabase.auth.getUser()
+      locals.safeGetSession()
     ]);
-    const session = user ? { user } : null;
 
     // Get user's summited peak IDs if logged in
     let summitedPeakIds: string[] = [];
-    if (session?.user) {
+    if (user) {
       const { data: summits } = await supabase
         .from('user_summits')
         .select('peak_id')
-        .eq('user_id', session.user.id);
+        .eq('user_id', user.id);
 
       summitedPeakIds = [...new Set(summits?.map(s => s.peak_id) || [])];
     }
 
     return {
       peaks,
-      isLoggedIn: !!session,
+      isLoggedIn: !!user,
       summitedPeakIds
     };
   } catch (error) {

@@ -1,5 +1,4 @@
 import type { PageServerLoad, Actions } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getUserSummitStats, getAdvancedStats } from '$lib/server/summits';
 import type { AdvancedStats } from '$lib/server/summits';
 import { getUserAchievements, markAchievementsNotified } from '$lib/server/achievements';
@@ -14,12 +13,11 @@ import { getReactionsForSummits, toggleReaction, type ReactionData } from '$lib/
 import { getCommentsForSummits, createComment, deleteComment, type CommentData } from '$lib/server/comments';
 import { redirect, fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies, url }) => {
-  const supabase = createSupabaseServerClient(cookies);
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
+export const load: PageServerLoad = async ({ locals, url }) => {
+  const { supabase } = locals;
+  const { user } = await locals.safeGetSession();
 
-  if (!session?.user) {
+  if (!user) {
     throw redirect(303, '/auth');
   }
 
@@ -30,7 +28,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .single();
 
   // Get favorite peak if set
@@ -51,7 +49,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
     .order('name', { ascending: true });
 
   // Get summit stats
-  const summitStats = await getUserSummitStats(supabase, session.user.id);
+  const summitStats = await getUserSummitStats(supabase, user.id);
 
   // Get all peaks for the grid visualization
   const { data: allPeaks } = await supabase
@@ -63,7 +61,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   const { data: userSummits } = await supabase
     .from('user_summits')
     .select('peak_id, date_summited')
-    .eq('user_id', session.user.id);
+    .eq('user_id', user.id);
 
   // Create a map of summited peaks with their most recent date
   const summitedPeaksMap = new Map<string, string>();
@@ -95,10 +93,10 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   });
 
   // Get user achievements from database
-  const userAchievements = await getUserAchievements(supabase, session.user.id);
+  const userAchievements = await getUserAchievements(supabase, user.id);
 
   // Mark achievements as notified (user is viewing their profile)
-  await markAchievementsNotified(supabase, session.user.id);
+  await markAchievementsNotified(supabase, user.id);
 
   // Tab-specific data loading
   let activityFeed: Awaited<ReturnType<typeof getUserActivityFeed>> = [];
@@ -115,39 +113,39 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   let summitComments: Record<string, CommentData> = {};
 
   if (activeTab === 'overview') {
-    const subscription = await getSubscription(supabase, session.user.id);
+    const subscription = await getSubscription(supabase, user.id);
     const userIsPro = isPro(subscription);
     [watchlist] = await Promise.all([
-      getUserWatchlist(supabase, session.user.id)
+      getUserWatchlist(supabase, user.id)
     ]);
     if (userIsPro) {
-      advancedStats = await getAdvancedStats(supabase, session.user.id);
+      advancedStats = await getAdvancedStats(supabase, user.id);
     }
   } else if (activeTab === 'activity') {
-    activityFeed = await getUserActivityFeed(supabase, session.user.id, 50);
+    activityFeed = await getUserActivityFeed(supabase, user.id, 50);
     // Load social data for summit items
     const summitIds = activityFeed
       .filter(a => a.type === 'summit')
       .map(a => a.id.replace('summit-', ''));
     if (summitIds.length > 0) {
       [summitReactions, summitComments] = await Promise.all([
-        getReactionsForSummits(supabase, summitIds, session.user.id),
+        getReactionsForSummits(supabase, summitIds, user.id),
         getCommentsForSummits(supabase, summitIds)
       ]);
     }
   } else if (activeTab === 'photos') {
-    userPhotos = await getUserPhotos(supabase, session.user.id);
+    userPhotos = await getUserPhotos(supabase, user.id);
   } else if (activeTab === 'buddies') {
     [followStats, following, followers, suggestions] = await Promise.all([
-      getFollowStats(supabase, session.user.id),
-      getFollowing(supabase, session.user.id, session.user.id),
-      getFollowers(supabase, session.user.id, session.user.id),
-      getSuggestedUsers(supabase, session.user.id)
+      getFollowStats(supabase, user.id),
+      getFollowing(supabase, user.id, user.id),
+      getFollowers(supabase, user.id, user.id),
+      getSuggestedUsers(supabase, user.id)
     ]);
   } else if (activeTab === 'trips') {
     [pastTrips, plannedTrips] = await Promise.all([
-      getUserPastTrips(supabase, session.user.id),
-      getUserPlannedTrips(supabase, session.user.id)
+      getUserPastTrips(supabase, user.id),
+      getUserPlannedTrips(supabase, user.id)
     ]);
   }
 
@@ -194,17 +192,16 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
     advancedStats,
     summitReactions,
     summitComments,
-    currentUserId: session.user.id
+    currentUserId: user.id
   };
 };
 
 export const actions: Actions = {
-  updatePrivacy: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  updatePrivacy: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 
@@ -214,7 +211,7 @@ export const actions: Actions = {
     const { error } = await supabase
       .from('profiles')
       .update({ is_public: isPublic })
-      .eq('id', session.user.id);
+      .eq('id', user.id);
 
     if (error) {
       return fail(500, { message: 'Failed to update privacy setting' });
@@ -223,12 +220,11 @@ export const actions: Actions = {
     return { success: true };
   },
 
-  updateProfile: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  updateProfile: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 
@@ -252,7 +248,7 @@ export const actions: Actions = {
     const { error } = await supabase
       .from('profiles')
       .update(updates)
-      .eq('id', session.user.id);
+      .eq('id', user.id);
 
     if (error) {
       return fail(500, { message: 'Failed to update profile' });
@@ -261,12 +257,11 @@ export const actions: Actions = {
     return { success: true };
   },
 
-  follow: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  follow: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 
@@ -278,7 +273,7 @@ export const actions: Actions = {
     }
 
     try {
-      await followUser(supabase, session.user.id, userId);
+      await followUser(supabase, user.id, userId);
       return { success: true };
     } catch (error) {
       console.error('Error following user:', error);
@@ -286,12 +281,11 @@ export const actions: Actions = {
     }
   },
 
-  unfollow: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  unfollow: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 
@@ -303,7 +297,7 @@ export const actions: Actions = {
     }
 
     try {
-      await unfollowUser(supabase, session.user.id, userId);
+      await unfollowUser(supabase, user.id, userId);
       return { success: true };
     } catch (error) {
       console.error('Error unfollowing user:', error);
@@ -311,12 +305,11 @@ export const actions: Actions = {
     }
   },
 
-  createTrip: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  createTrip: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 
@@ -340,7 +333,7 @@ export const actions: Actions = {
       await createPlannedTrip(
         supabase,
         {
-          user_id: session.user.id,
+          user_id: user.id,
           title,
           start_date: startDate,
           end_date: endDate,
@@ -356,12 +349,11 @@ export const actions: Actions = {
     }
   },
 
-  toggleTripVisibility: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  toggleTripVisibility: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 
@@ -384,12 +376,11 @@ export const actions: Actions = {
     }
   },
 
-  removeFromWatchlist: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  removeFromWatchlist: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 
@@ -401,7 +392,7 @@ export const actions: Actions = {
     }
 
     try {
-      await removeFromWatchlist(supabase, session.user.id, peakId);
+      await removeFromWatchlist(supabase, user.id, peakId);
       return { success: true };
     } catch (error) {
       console.error('Error removing from watchlist:', error);
@@ -409,40 +400,37 @@ export const actions: Actions = {
     }
   },
 
-  toggleReaction: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user) throw redirect(303, '/auth');
+  toggleReaction: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
     const summitId = formData.get('summitId') as string;
     if (!summitId) return fail(400, { error: 'Summit ID is required' });
 
-    await toggleReaction(supabase, summitId, session.user.id);
+    await toggleReaction(supabase, summitId, user.id);
     return { success: true };
   },
 
-  addComment: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user) throw redirect(303, '/auth');
+  addComment: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
     const summitId = formData.get('summitId') as string;
     const body = (formData.get('body') as string)?.trim();
     if (!summitId || !body) return fail(400, { error: 'Summit ID and comment body are required' });
 
-    await createComment(supabase, summitId, session.user.id, body);
+    await createComment(supabase, summitId, user.id, body);
     return { success: true };
   },
 
-  deleteComment: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user) throw redirect(303, '/auth');
+  deleteComment: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
     const commentId = formData.get('commentId') as string;
@@ -452,12 +440,11 @@ export const actions: Actions = {
     return { success: true };
   },
 
-  deleteTrip: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  deleteTrip: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       throw redirect(303, '/auth');
     }
 

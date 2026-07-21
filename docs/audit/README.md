@@ -87,3 +87,12 @@ Legend: ⬜ Not started · 🟡 In progress · ✅ Report delivered · 🔵 Back
   incomplete RevenueCat fix; stale-types regression). All new items logged in
   [`backlog.md`](backlog.md#addendum--fable-deep-bank-findings-2026-07-14). Next: fix batch for the
   live-code R-items.
+- **2026-07-14** · Review fix batch pt.1 (R-H1/H2/RC1/RC2, B-1/B-2/B-3) · 🔧 Sonnet · ✅ shipped `2ed513a`.
+  Rate-limiter XFF→getClientAddress + secret-before-limit; RevenueCat upserts + UUID guard + ordering
+  guard; isPro counts trialing; og:url removed; robots hardened. build 0 / check 31.
+- **2026-07-14** · Review fix batch pt.2 (R-A auth centralization + R-L1) · 🧠 Opus · ✅ shipped —
+  one request-scoped client + memoized `locals.safeGetSession()` in hooks; 35 files converted off
+  per-load `getUser()`; kills M1/M2 refresh-race + redundant hops; 404s no longer error-logged.
+  build 0 / check **29** (−2). Logged-out smoke ✓. **Authed path: owner to run the manual-test script
+  (in `reviews/S1-S2-auth-redteam.md`) on deploy.**
+- **Still owner-only:** R-M3 types regen (needs Supabase CLI) — also unblocks T1-6 + T1-9/T1-10 migrations.

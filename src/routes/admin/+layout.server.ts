@@ -1,13 +1,11 @@
 import type { LayoutServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { assertAdmin } from '$lib/server/admin';
 
-export const load: LayoutServerLoad = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
+export const load: LayoutServerLoad = async ({ locals }) => {
+  const { supabase } = locals;
+  const { user } = await locals.safeGetSession();
 
-  assertAdmin(session);
+  assertAdmin(user);
 
   // Badge counts for tabs
   const [pendingFlagsResult, flaggedImagesResult] = await Promise.all([

@@ -1,6 +1,5 @@
 import type { PageServerLoad } from './$types';
 import type { ForecastResponse, DayForecast } from '$lib/types/database';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getPeakBySlug } from '$lib/server/peaks';
 import { getForecastForPeak } from '$lib/server/conditions';
 import { getSubscription, isPro } from '$lib/server/subscriptions';
@@ -42,8 +41,8 @@ function toFreeForecast(forecast: ForecastResponse): ForecastResponse {
 	};
 }
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
-	const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ params, locals }) => {
+	const { supabase } = locals;
 
 	const peak = await getPeakBySlug(supabase, params.slug);
 
@@ -51,15 +50,14 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 		throw error(404, { message: 'Peak not found' });
 	}
 
-	const { data: { user } } = await supabase.auth.getUser();
-	const session = user ? { user } : null;
+	const { user } = await locals.safeGetSession();
 
 	let userIsPro = false;
-	if (session?.user) {
-		if (isAdmin(session.user.id)) {
+	if (user) {
+		if (isAdmin(user.id)) {
 			userIsPro = true;
 		} else {
-			const subscription = await getSubscription(supabase, session.user.id);
+			const subscription = await getSubscription(supabase, user.id);
 			userIsPro = isPro(subscription);
 		}
 	}

@@ -1,11 +1,9 @@
 import type { PageServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ locals }) => {
+  const { supabase } = locals;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
+  const { user } = await locals.safeGetSession();
 
   // Get all peaks with their standard route difficulty
   const { data: peaks } = await supabase
@@ -39,11 +37,11 @@ export const load: PageServerLoad = async ({ cookies }) => {
 
   // Get user's summited peaks if logged in
   let summitedPeakIds: string[] = [];
-  if (session?.user) {
+  if (user) {
     const { data: summits } = await supabase
       .from('user_summits')
       .select('peak_id')
-      .eq('user_id', session.user.id);
+      .eq('user_id', user.id);
 
     summitedPeakIds = [...new Set(summits?.map(s => s.peak_id) ?? [])];
   }
@@ -74,7 +72,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
   return {
     peaks: peaksWithClass,
     summitedPeakIds,
-    isLoggedIn: !!session,
+    isLoggedIn: !!user,
     trails
   };
 };

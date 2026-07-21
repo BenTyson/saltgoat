@@ -1,5 +1,4 @@
 import type { PageServerLoad, Actions } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { isAdmin } from '$lib/server/admin';
 import { getFlaggedImages, moderateImage, getImageUrl } from '$lib/server/images';
 import { getPendingFlags, resolveFlag } from '$lib/server/flags';
@@ -7,8 +6,8 @@ import { getRecentPhotos, getResolvedFlags, adminDeleteReview, adminDeleteTrailR
 import { getCategories, getRecentTopics, pinTopic, lockTopic, moveTopic, adminDeleteTopic } from '$lib/server/forum';
 import { fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ locals }) => {
+  const { supabase } = locals;
 
   const [flaggedImages, pendingFlags, recentPhotos, resolvedFlags, forumCategories, recentForumTopics] = await Promise.all([
     getFlaggedImages(supabase),
@@ -35,12 +34,11 @@ export const load: PageServerLoad = async ({ cookies }) => {
 };
 
 export const actions: Actions = {
-  approveImage: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  approveImage: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user || !isAdmin(session.user.id)) {
+    if (!user || !isAdmin(user.id)) {
       return fail(403, { message: 'Admin access required' });
     }
 
@@ -48,7 +46,7 @@ export const actions: Actions = {
     const imageId = formData.get('image_id') as string;
 
     try {
-      await moderateImage(supabase, imageId, 'approve', session.user.id);
+      await moderateImage(supabase, imageId, 'approve', user.id);
       return { success: true };
     } catch (e) {
       console.error('Error approving image:', e);
@@ -56,12 +54,11 @@ export const actions: Actions = {
     }
   },
 
-  removeImage: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  removeImage: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user || !isAdmin(session.user.id)) {
+    if (!user || !isAdmin(user.id)) {
       return fail(403, { message: 'Admin access required' });
     }
 
@@ -69,7 +66,7 @@ export const actions: Actions = {
     const imageId = formData.get('image_id') as string;
 
     try {
-      await moderateImage(supabase, imageId, 'remove', session.user.id);
+      await moderateImage(supabase, imageId, 'remove', user.id);
       return { success: true };
     } catch (e) {
       console.error('Error removing image:', e);
@@ -77,12 +74,11 @@ export const actions: Actions = {
     }
   },
 
-  resolveFlag: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  resolveFlag: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user || !isAdmin(session.user.id)) {
+    if (!user || !isAdmin(user.id)) {
       return fail(403, { message: 'Admin access required' });
     }
 
@@ -91,7 +87,7 @@ export const actions: Actions = {
     const action = formData.get('action') as 'dismissed' | 'actioned';
 
     try {
-      await resolveFlag(supabase, flagId, action, session.user.id);
+      await resolveFlag(supabase, flagId, action, user.id);
       return { success: true };
     } catch (e) {
       console.error('Error resolving flag:', e);
@@ -99,12 +95,11 @@ export const actions: Actions = {
     }
   },
 
-  deleteReview: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  deleteReview: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user || !isAdmin(session.user.id)) {
+    if (!user || !isAdmin(user.id)) {
       return fail(403, { message: 'Admin access required' });
     }
 
@@ -120,12 +115,11 @@ export const actions: Actions = {
     }
   },
 
-  deleteTrailReport: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  deleteTrailReport: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user || !isAdmin(session.user.id)) {
+    if (!user || !isAdmin(user.id)) {
       return fail(403, { message: 'Admin access required' });
     }
 
@@ -141,11 +135,10 @@ export const actions: Actions = {
     }
   },
 
-  pinForumTopic: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  pinForumTopic: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const topicId = formData.get('topic_id') as string;
@@ -159,11 +152,10 @@ export const actions: Actions = {
     }
   },
 
-  lockForumTopic: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  lockForumTopic: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const topicId = formData.get('topic_id') as string;
@@ -177,11 +169,10 @@ export const actions: Actions = {
     }
   },
 
-  moveForumTopic: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  moveForumTopic: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const topicId = formData.get('topic_id') as string;
@@ -195,12 +186,11 @@ export const actions: Actions = {
     }
   },
 
-  flagImage: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  flagImage: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user || !isAdmin(session.user.id)) {
+    if (!user || !isAdmin(user.id)) {
       return fail(403, { message: 'Admin access required' });
     }
 
@@ -219,11 +209,10 @@ export const actions: Actions = {
     }
   },
 
-  deleteForumTopic: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  deleteForumTopic: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const topicId = formData.get('topic_id') as string;

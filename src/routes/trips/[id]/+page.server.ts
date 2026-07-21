@@ -1,12 +1,10 @@
 import type { PageServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getPublicTrip } from '$lib/server/trips';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
+export const load: PageServerLoad = async ({ params, locals }) => {
+  const { supabase } = locals;
+  const { user } = await locals.safeGetSession();
 
   const trip = await getPublicTrip(supabase, params.id);
 
@@ -14,7 +12,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     throw error(404, 'Trip not found');
   }
 
-  const isOwner = session?.user?.id === trip.user_id;
+  const isOwner = user?.id === trip.user_id;
 
   if (!trip.is_public && !isOwner) {
     throw error(404, 'Trip not found');

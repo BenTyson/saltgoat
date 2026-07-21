@@ -1,10 +1,9 @@
 import type { PageServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { rangeData } from '$lib/data/ranges';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ params, locals }) => {
+  const { supabase } = locals;
 
   // Find range info by slug
   const rangeInfo = Object.values(rangeData).find(r => r.slug === params.slug);
@@ -48,17 +47,16 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     };
   });
 
-  // Get session for user-specific data
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
+  // Get user for user-specific data
+  const { user } = await locals.safeGetSession();
 
   // Get user's summited peaks if logged in
   let userSummitedPeaks: Record<string, string> = {}; // peakId -> most recent date
-  if (session?.user) {
+  if (user) {
     const { data: summits } = await supabase
       .from('user_summits')
       .select('peak_id, date_summited')
-      .eq('user_id', session.user.id);
+      .eq('user_id', user.id);
 
     summits?.forEach(s => {
       if (!userSummitedPeaks[s.peak_id] || s.date_summited > userSummitedPeaks[s.peak_id]) {
@@ -79,7 +77,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     rangeInfo,
     peaks: peaksWithStandardRoute,
     userSummitedPeaks,
-    isLoggedIn: !!session,
+    isLoggedIn: !!user,
     stats: {
       totalPeaks,
       summitedCount,

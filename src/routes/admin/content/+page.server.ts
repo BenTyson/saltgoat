@@ -1,5 +1,4 @@
 import type { PageServerLoad, Actions } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { isAdmin } from '$lib/server/admin';
 import {
   getAdminPhotos,
@@ -13,8 +12,8 @@ import {
 import { moderateImage } from '$lib/server/images';
 import { fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies, url }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ locals, url }) => {
+  const { supabase } = locals;
 
   const contentType = url.searchParams.get('type') ?? 'photos';
   const page = parseInt(url.searchParams.get('page') ?? '1', 10);
@@ -58,35 +57,32 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 };
 
 export const actions: Actions = {
-  approvePhoto: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  approvePhoto: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const imageId = formData.get('image_id') as string;
-    await moderateImage(supabase, imageId, 'approve', session.user.id);
+    await moderateImage(supabase, imageId, 'approve', user.id);
     return { success: true };
   },
 
-  removePhoto: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  removePhoto: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const imageId = formData.get('image_id') as string;
-    await moderateImage(supabase, imageId, 'remove', session.user.id);
+    await moderateImage(supabase, imageId, 'remove', user.id);
     return { success: true };
   },
 
-  deleteReview: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  deleteReview: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const reviewId = formData.get('review_id') as string;
@@ -94,11 +90,10 @@ export const actions: Actions = {
     return { success: true };
   },
 
-  deleteTrailReport: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  deleteTrailReport: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const reportId = formData.get('report_id') as string;
@@ -106,11 +101,10 @@ export const actions: Actions = {
     return { success: true };
   },
 
-  deleteTrace: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user || !isAdmin(session.user.id)) return fail(403);
+  deleteTrace: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user || !isAdmin(user.id)) return fail(403);
 
     const formData = await request.formData();
     const traceId = formData.get('trace_id') as string;

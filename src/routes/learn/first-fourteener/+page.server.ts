@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 
 export interface RecommenderPeak {
   id: string;
@@ -22,8 +21,8 @@ export interface RecommenderPeak {
   } | null;
 }
 
-export const load: PageServerLoad = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ locals }) => {
+  const { supabase } = locals;
 
   // Get all peaks with standard route details needed for recommender
   const { data, error } = await supabase

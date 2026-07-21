@@ -1,5 +1,4 @@
 import type { PageServerLoad, Actions } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getRouteBySlug } from '$lib/server/peaks';
 import { getBestTrace, getTracesForRoute, uploadTrace, toggleVote, deleteTrace, getTraceDownloadUrl } from '$lib/server/traces';
 import { getForecastForPeak } from '$lib/server/conditions';
@@ -7,8 +6,8 @@ import { getSubscription, isPro } from '$lib/server/subscriptions';
 import { isAdmin } from '$lib/server/admin';
 import { error, fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ params, locals }) => {
+  const { supabase } = locals;
 
   const result = await getRouteBySlug(supabase, params.slug, params.route);
 
@@ -18,9 +17,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     });
   }
 
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
-  const userId = session?.user?.id;
+  const { user } = await locals.safeGetSession();
+  const userId = user?.id;
 
   let userIsPro = false;
   if (userId) {
@@ -76,7 +74,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     bestTrace,
     allTraces,
     downloadUrls,
-    isLoggedIn: !!session,
+    isLoggedIn: !!user,
     currentUserId: userId,
     forecast,
     isPro: userIsPro
@@ -84,12 +82,11 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 };
 
 export const actions: Actions = {
-  uploadTrace: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  uploadTrace: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in to upload traces' });
     }
 
@@ -103,7 +100,7 @@ export const actions: Actions = {
 
     try {
       const gpxContent = await file.text();
-      await uploadTrace(supabase, routeId, session.user.id, gpxContent);
+      await uploadTrace(supabase, routeId, user.id, gpxContent);
       return { success: true };
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to upload trace';
@@ -111,12 +108,11 @@ export const actions: Actions = {
     }
   },
 
-  voteTrace: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  voteTrace: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in to vote' });
     }
 
@@ -128,19 +124,18 @@ export const actions: Actions = {
     }
 
     try {
-      await toggleVote(supabase, traceId, session.user.id);
+      await toggleVote(supabase, traceId, user.id);
       return { success: true };
     } catch (e) {
       return fail(500, { message: 'Failed to toggle vote' });
     }
   },
 
-  deleteTrace: async ({ request, cookies }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
+  deleteTrace: async ({ request, locals }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
 
-    if (!session?.user) {
+    if (!user) {
       return fail(401, { message: 'Must be logged in' });
     }
 
@@ -158,7 +153,7 @@ export const actions: Actions = {
       .eq('id', traceId)
       .single();
 
-    if (trace?.uploaded_by !== session.user.id) {
+    if (trace?.uploaded_by !== user.id) {
       return fail(403, { message: 'Can only delete your own traces' });
     }
 

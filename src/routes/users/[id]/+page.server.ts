@@ -1,5 +1,4 @@
 import type { PageServerLoad, Actions } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getUserAchievements } from '$lib/server/achievements';
 import { getSubscription, isPro } from '$lib/server/subscriptions';
 import { getReactionsForSummits, toggleReaction, type ReactionData } from '$lib/server/reactions';
@@ -7,8 +6,8 @@ import { getCommentsForSummits, createComment, deleteComment, type CommentData }
 import { getUserTopics } from '$lib/server/forum';
 import { error, redirect, fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ params, locals }) => {
+  const { supabase } = locals;
   const userId = params.id;
 
   // Get the profile
@@ -24,9 +23,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
   // Check if profile is public (RLS should handle this, but double-check)
   // If user is viewing their own profile, they can always see it
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
-  const isOwnProfile = session?.user?.id === userId;
+  const { user } = await locals.safeGetSession();
+  const isOwnProfile = user?.id === userId;
 
   if (!profile.is_public && !isOwnProfile) {
     throw error(404, { message: 'This profile is private' });
@@ -111,7 +109,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
   const summitIds = recentSummits.map((s: any) => s.id);
   let summitReactions: Record<string, ReactionData> = {};
   let summitComments: Record<string, CommentData> = {};
-  const currentUserId = session?.user?.id ?? null;
+  const currentUserId = user?.id ?? null;
 
   if (summitIds.length > 0) {
     [summitReactions, summitComments] = await Promise.all([
@@ -142,40 +140,37 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 };
 
 export const actions: Actions = {
-  toggleReaction: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user) throw redirect(303, '/auth');
+  toggleReaction: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
     const summitId = formData.get('summitId') as string;
     if (!summitId) return fail(400, { error: 'Summit ID is required' });
 
-    await toggleReaction(supabase, summitId, session.user.id);
+    await toggleReaction(supabase, summitId, user.id);
     return { success: true };
   },
 
-  addComment: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user) throw redirect(303, '/auth');
+  addComment: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
     const summitId = formData.get('summitId') as string;
     const body = (formData.get('body') as string)?.trim();
     if (!summitId || !body) return fail(400, { error: 'Summit ID and comment body are required' });
 
-    await createComment(supabase, summitId, session.user.id, body);
+    await createComment(supabase, summitId, user.id, body);
     return { success: true };
   },
 
-  deleteComment: async ({ cookies, request }) => {
-    const supabase = createSupabaseServerClient(cookies);
-    const { data: { user } } = await supabase.auth.getUser();
-    const session = user ? { user } : null;
-    if (!session?.user) throw redirect(303, '/auth');
+  deleteComment: async ({ locals, request }) => {
+    const { supabase } = locals;
+    const { user } = await locals.safeGetSession();
+    if (!user) throw redirect(303, '/auth');
 
     const formData = await request.formData();
     const commentId = formData.get('commentId') as string;

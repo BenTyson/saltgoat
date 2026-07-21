@@ -1,9 +1,8 @@
 import type { PageServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { getAdminUserList } from '$lib/server/admin';
 
-export const load: PageServerLoad = async ({ cookies, url }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ locals, url }) => {
+  const { supabase } = locals;
 
   const search = url.searchParams.get('search') ?? undefined;
   const sortBy = url.searchParams.get('sort') ?? 'created_at';

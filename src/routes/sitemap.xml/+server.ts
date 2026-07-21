@@ -1,5 +1,4 @@
 import type { RequestHandler } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 
 const BASE_URL = 'https://saltgoat.co';
 
@@ -10,8 +9,8 @@ interface PeakRow {
   routes: Array<{ slug: string; updated_at: string }>;
 }
 
-export const GET: RequestHandler = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const GET: RequestHandler = async ({ locals }) => {
+  const { supabase } = locals;
 
   // Fetch all peaks and routes
   const { data } = await supabase.from('peaks').select(`

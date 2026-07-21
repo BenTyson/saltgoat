@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { createSupabaseServerClient } from '$lib/server/supabase';
 import { rangeData, type RangeInfo } from '$lib/data/ranges';
 
 export interface RangeWithStats extends RangeInfo {
@@ -11,8 +10,8 @@ export interface RangeWithStats extends RangeInfo {
   userSummitedCount?: number;
 }
 
-export const load: PageServerLoad = async ({ cookies }) => {
-  const supabase = createSupabaseServerClient(cookies);
+export const load: PageServerLoad = async ({ locals }) => {
+  const { supabase } = locals;
 
   // Get all peaks with their standard route difficulty
   const { data: peaks } = await supabase
@@ -29,17 +28,16 @@ export const load: PageServerLoad = async ({ cookies }) => {
     `)
     .eq('routes.is_standard', true);
 
-  // Get session for user-specific data
-  const { data: { user } } = await supabase.auth.getUser();
-  const session = user ? { user } : null;
+  // Get user for user-specific data
+  const { user } = await locals.safeGetSession();
 
   // Get user's summited peaks if logged in
   let userSummitedPeaks: Set<string> = new Set();
-  if (session?.user) {
+  if (user) {
     const { data: summits } = await supabase
       .from('user_summits')
       .select('peak_id')
-      .eq('user_id', session.user.id);
+      .eq('user_id', user.id);
 
     summits?.forEach(s => userSummitedPeaks.add(s.peak_id));
   }
@@ -90,7 +88,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
       lowestElevation,
       highestPeak,
       classRange,
-      userSummitedCount: session ? stats.summitedCount : undefined
+      userSummitedCount: user ? stats.summitedCount : undefined
     };
   });
 
@@ -99,6 +97,6 @@ export const load: PageServerLoad = async ({ cookies }) => {
 
   return {
     ranges,
-    isLoggedIn: !!session
+    isLoggedIn: !!user
   };
 };

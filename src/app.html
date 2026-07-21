@@ -12,7 +12,13 @@
     <meta property="og:title" content="SaltGoat - Colorado 14ers Tracker" />
     <meta property="og:description" content="Track your Colorado 14er summits. All 58 peaks with routes, maps, reviews, and progress tracking." />
     <meta property="og:image" content="https://saltgoat.co/icons/og-image.png" />
-    <meta property="og:url" content="https://saltgoat.co" />
+    <!-- og:url intentionally omitted here (B-2): app.html is a static shell with
+         no per-request templating, so a hardcoded value here is always wrong for
+         every route except "/". Pages that care (peaks/[slug], .../weather,
+         community/[category]/[topic], trips/[id]) set their own og:url via
+         svelte:head with the real canonical URL. Pages that don't set one
+         simply omit og:url — scrapers fall back to the actual request URL,
+         which beats asserting a wrong one for every non-home page. -->
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />

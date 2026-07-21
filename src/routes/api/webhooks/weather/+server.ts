@@ -85,17 +85,21 @@ async function processPeak(
 export const POST: RequestHandler = async (event) => {
   const { request } = event;
 
-  // Rate limit secret-check attempts per IP to blunt brute-force.
-  const limit = rateLimit('webhook', clientKey(event));
-  if (!limit.allowed) return tooManyRequests(limit);
-
   const webhookSecret = env.WEBHOOK_SECRET;
   const secret =
     request.headers.get('x-webhook-secret') ||
     request.headers.get('X-Webhook-Secret') ||
     request.headers.get('X-WEBHOOK-SECRET');
 
+  // R-H1 fix: rate-limit only FAILED auth attempts, checked AFTER the secret
+  // compare (was before). The client IP is attacker-spoofable (see
+  // rateLimit.ts), so limiting pre-auth let an attacker exhaust the real cron
+  // caller's IP bucket with junk requests and 429 the legitimate weather run.
+  // Gating on auth failure caps secret brute-forcing while leaving
+  // authenticated traffic unthrottled.
   if (!webhookSecret || !safeSecretEqual(secret, webhookSecret)) {
+    const limit = rateLimit('webhook', clientKey(event));
+    if (!limit.allowed) return tooManyRequests(limit);
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -218,13 +222,13 @@ export const POST: RequestHandler = async (event) => {
 export const GET: RequestHandler = async (event) => {
   const { url } = event;
 
-  const limit = rateLimit('webhook', clientKey(event));
-  if (!limit.allowed) return tooManyRequests(limit);
-
   const secret = url.searchParams.get('secret');
   const webhookSecret = env.WEBHOOK_SECRET;
 
+  // R-H1 fix: see POST above — rate-limit only failed auth attempts.
   if (!webhookSecret || !safeSecretEqual(secret, webhookSecret)) {
+    const limit = rateLimit('webhook', clientKey(event));
+    if (!limit.allowed) return tooManyRequests(limit);
     return new Response('Unauthorized', { status: 401 });
   }
 

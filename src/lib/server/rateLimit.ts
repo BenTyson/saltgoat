@@ -85,16 +85,29 @@ export function rateLimit(name: RateLimitName, key: string): RateLimitResult {
 }
 
 /**
- * Derive a client key (IP) from the request. Honors the Railway/edge proxy
- * `x-forwarded-for` chain (first hop = original client), falling back to
- * SvelteKit's `getClientAddress()`.
+ * Derive a client key (IP) from the request.
+ *
+ * FIX (R-H1 / Fable review, S1-S2-webhooks-infra-review.md#H1): this used to
+ * read the FIRST hop of `x-forwarded-for`, which is attacker-supplied — a
+ * client can put anything there, so keying on it made the limiter both
+ * bypassable (spoof a new "IP" per request) and a DoS lever (spoof a
+ * legitimate caller's IP, e.g. RevenueCat/Supabase's egress address, to burn
+ * their bucket and 429 real webhook traffic).
+ *
+ * We now key exclusively on SvelteKit's `event.getClientAddress()`, which is
+ * the platform-trusted client address rather than a raw header we parse
+ * ourselves. On adapter-node this reads the socket's remote address UNLESS
+ * `ADDRESS_HEADER` + `XFF_DEPTH` are set, in which case it walks the
+ * `x-forwarded-for` chain from the *right* (proxy-appended) end by the
+ * configured depth — the trustworthy hop, not the client-controlled one.
+ *
+ * ACTION REQUIRED on Railway: set `ADDRESS_HEADER=x-forwarded-for` and
+ * `XFF_DEPTH=1` (one trusted proxy hop) so this resolves real per-client IPs.
+ * Until those env vars are set, every request behind Railway's proxy shares
+ * one address (the proxy's), which coarsens rate limits (shared bucket) but
+ * — importantly — is not spoofable, so it fails safe rather than open.
  */
-export function clientKey(event: Pick<RequestEvent, 'request' | 'getClientAddress'>): string {
-  const forwarded = event.request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim();
-    if (first) return first;
-  }
+export function clientKey(event: Pick<RequestEvent, 'getClientAddress'>): string {
   try {
     return event.getClientAddress();
   } catch {

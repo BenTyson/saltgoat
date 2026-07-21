@@ -18,16 +18,21 @@ interface WebhookPayload {
 export const POST: RequestHandler = async (event) => {
 	const { request } = event;
 
-	const limit = rateLimit('webhook', clientKey(event));
-	if (!limit.allowed) return tooManyRequests(limit);
-
 	const secret = env.SUPABASE_WEBHOOK_SECRET;
 	if (!secret) {
 		return json({ error: 'Webhook not configured' }, { status: 500 });
 	}
 
+	// R-H1 fix: rate-limit only FAILED auth attempts, checked AFTER the secret
+	// compare (was before). The client IP is attacker-spoofable (see
+	// rateLimit.ts), so limiting pre-auth let an attacker exhaust Supabase's
+	// real egress IP bucket with junk requests and 429 legitimate signup
+	// webhooks (silently killing welcome emails). Gating on auth failure caps
+	// secret brute-forcing while leaving authenticated traffic unthrottled.
 	const authHeader = request.headers.get('Authorization');
 	if (!safeBearerEqual(authHeader, secret)) {
+		const limit = rateLimit('webhook', clientKey(event));
+		if (!limit.allowed) return tooManyRequests(limit);
 		return json({ error: 'Invalid authorization' }, { status: 401 });
 	}
 

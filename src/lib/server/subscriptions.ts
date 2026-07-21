@@ -42,8 +42,13 @@ export async function getSubscription(
   }
 }
 
+// B-1 fix: 'trialing' is a valid Pro-granting status (Stripe trial subscriptions
+// and RevenueCat trials both use it) but was excluded, so trial users got zero
+// Pro features — silently defeating any trial-based conversion experiment.
+const PRO_STATUSES: ReadonlySet<Subscription['status']> = new Set(['active', 'trialing']);
+
 export function isPro(subscription: Subscription | null): boolean {
-  return subscription?.plan === 'pro' && subscription?.status === 'active';
+  return subscription?.plan === 'pro' && PRO_STATUSES.has(subscription.status);
 }
 
 export async function canLogSummit(

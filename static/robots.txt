@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /profile
+Disallow: /auth
 
 Sitemap: https://saltgoat.co/sitemap.xml

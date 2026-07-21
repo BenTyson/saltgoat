@@ -13,6 +13,7 @@ interface RevenueCatEvent {
 	original_transaction_id?: string;
 	product_id?: string;
 	expiration_at_ms?: number;
+	event_timestamp_ms?: number;
 	store?: string;
 }
 
@@ -26,19 +27,29 @@ function getPlatform(store?: string): string | null {
 	return null;
 }
 
+// Generic UUID matcher (any version) — `user_subscriptions.user_id` is a
+// Postgres `uuid` column, so anything else can never match a row.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const POST: RequestHandler = async (event) => {
 	const { request } = event;
-
-	const limit = rateLimit('webhook', clientKey(event));
-	if (!limit.allowed) return tooManyRequests(limit);
 
 	const secret = env.REVENUECAT_WEBHOOK_SECRET;
 	if (!secret) {
 		return json({ error: 'Webhook not configured' }, { status: 500 });
 	}
 
+	// R-H1 fix: rate-limit only FAILED auth attempts, checked AFTER the secret
+	// compare, not before. The IP/clientKey is attacker-spoofable (see
+	// rateLimit.ts), so limiting it pre-auth let an attacker exhaust a real
+	// caller's (RevenueCat's) bucket with junk requests and 429 legitimate
+	// webhook traffic — without ever needing the secret. Gating on auth
+	// failure caps secret brute-forcing while leaving authenticated traffic
+	// (the only traffic that matters here) unthrottled.
 	const authHeader = request.headers.get('Authorization');
 	if (!safeBearerEqual(authHeader, secret)) {
+		const limit = rateLimit('webhook', clientKey(event));
+		if (!limit.allowed) return tooManyRequests(limit);
 		return json({ error: 'Invalid authorization' }, { status: 401 });
 	}
 
@@ -48,13 +59,71 @@ export const POST: RequestHandler = async (event) => {
 		return json({ error: 'Invalid payload' }, { status: 400 });
 	}
 
-	const supabase = createSupabaseServiceClient();
 	const userId = rcEvent.app_user_id;
-	const now = new Date().toISOString();
+
+	// R-RC1 fix: RevenueCat sends anonymous ($RCAnonymousID:...) or alias ids
+	// for purchases made before/without Purchases.logIn(user.id). Those can
+	// never match a `user_subscriptions.user_id` (uuid) row — writing them is
+	// undeliverable by construction. Pre-fix this either silently 200'd (masking
+	// the mismatch) or, with the H2 fix in place, would hard-fail every retry
+	// for RC's ~24h retry window. Skip immediately with 200 so RC stops retrying.
+	if (!UUID_RE.test(userId)) {
+		logger.warn('revenuecat webhook: non-UUID app_user_id, skipping', {
+			type: rcEvent.type,
+			appUserId: userId
+		});
+		return json({ received: true, skipped: 'non-uuid app_user_id' });
+	}
+
+	const supabase = createSupabaseServiceClient();
+
+	// R-RC2 fix: guard against out-of-order delivery. RC retries a failed event
+	// for up to ~24h, so a transiently-failed RENEWAL can retry AFTER a newer
+	// EXPIRATION has already landed and would otherwise resurrect Pro with
+	// stale data (writes are individually idempotent but not commutative).
+	//
+	// We don't have a dedicated `last_event_at` column (no DB migration in this
+	// pass — this session has no `supabase db push` credentials), so we
+	// repurpose `updated_at`, which every write below sets and nothing else in
+	// the app treats as a wall-clock audit field (see admin.ts / leaderboard.ts
+	// — both only read `plan`/`status`, or order by `created_at`). Instead of
+	// stamping `now()`, we stamp RC's own `event_timestamp_ms`, making it
+	// directly comparable across events: skip (200) if this event is not newer
+	// than the state already applied. A dedicated `last_event_at` column would
+	// be cleaner and should replace this once a migration can be pushed.
+	const eventTime = rcEvent.event_timestamp_ms
+		? new Date(rcEvent.event_timestamp_ms).toISOString()
+		: new Date().toISOString();
+
+	const { data: existing } = await supabase
+		.from('user_subscriptions')
+		.select('updated_at')
+		.eq('user_id', userId)
+		.maybeSingle();
+
+	// Compare as Date instants, not raw strings: Postgres (`+00:00` suffix) and
+	// JS `toISOString()` (`.000Z` suffix) format timestamps differently, so a
+	// lexicographic string compare isn't reliably ordered at the boundary.
+	if (existing?.updated_at && new Date(eventTime).getTime() <= new Date(existing.updated_at).getTime()) {
+		logger.info('revenuecat webhook: stale/out-of-order event, skipping', {
+			type: rcEvent.type,
+			userId,
+			eventTime,
+			appliedAt: existing.updated_at
+		});
+		return json({ received: true, skipped: 'stale event' });
+	}
+
+	const now = eventTime;
 
 	// Each case sets `dbError` from its write. If any write fails we log with
 	// context and return 5xx so RevenueCat retries (it retries non-2xx up to 24h).
-	// The upserts/updates are idempotent (keyed on user_id), so retries are safe.
+	// R-H2 fix: RENEWAL/CANCELLATION/EXPIRATION/BILLING_ISSUE_DETECTED now
+	// upsert (not `.update().eq()`) keyed on `user_id`. A plain `.update()`
+	// matching zero rows (e.g. the INITIAL_PURCHASE that should have created
+	// this row never landed) returns no error and 200s with no state change —
+	// a paying customer silently never gets Pro. Upsert makes every branch
+	// self-healing: it creates the row if missing instead of silently no-op'ing.
 	let dbError: { message: string; code?: string } | null = null;
 
 	switch (rcEvent.type) {
@@ -91,48 +160,57 @@ export const POST: RequestHandler = async (event) => {
 				? new Date(rcEvent.expiration_at_ms).toISOString()
 				: null;
 
-			const { error } = await supabase
-				.from('user_subscriptions')
-				.update({
+			// Upsert (not update): also heals the H2 "lost INITIAL_PURCHASE" case —
+			// a RENEWAL carries everything needed to grant Pro, so if no row
+			// exists yet this creates it instead of silently no-op'ing.
+			const { error } = await supabase.from('user_subscriptions').upsert(
+				{
+					user_id: userId,
+					plan: 'pro',
 					status: 'active',
+					platform: getPlatform(rcEvent.store),
 					current_period_end: periodEnd,
 					updated_at: now
-				})
-				.eq('user_id', userId);
+				},
+				{ onConflict: 'user_id' }
+			);
 			dbError = error;
 			break;
 		}
 		case 'CANCELLATION': {
-			const { error } = await supabase
-				.from('user_subscriptions')
-				.update({
+			const { error } = await supabase.from('user_subscriptions').upsert(
+				{
+					user_id: userId,
 					status: 'canceled',
 					updated_at: now
-				})
-				.eq('user_id', userId);
+				},
+				{ onConflict: 'user_id' }
+			);
 			dbError = error;
 			break;
 		}
 		case 'EXPIRATION': {
-			const { error } = await supabase
-				.from('user_subscriptions')
-				.update({
+			const { error } = await supabase.from('user_subscriptions').upsert(
+				{
+					user_id: userId,
 					plan: 'free',
 					status: 'canceled',
 					updated_at: now
-				})
-				.eq('user_id', userId);
+				},
+				{ onConflict: 'user_id' }
+			);
 			dbError = error;
 			break;
 		}
 		case 'BILLING_ISSUE_DETECTED': {
-			const { error } = await supabase
-				.from('user_subscriptions')
-				.update({
+			const { error } = await supabase.from('user_subscriptions').upsert(
+				{
+					user_id: userId,
 					status: 'past_due',
 					updated_at: now
-				})
-				.eq('user_id', userId);
+				},
+				{ onConflict: 'user_id' }
+			);
 			dbError = error;
 			break;
 		}

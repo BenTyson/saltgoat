@@ -81,3 +81,9 @@ Legend: ⬜ Not started · 🟡 In progress · ✅ Report delivered · 🔵 Back
 - **Open (Tier 0, 👤 you):** T0-1 Stripe price id · T0-2 weather cron · T0-3 SPARROW_URL · T0-4 real
   secrets · T0-6 delete forum garbage · T0-7 Open-Meteo key.
 - **Deferred → Session 3:** T0-5/T1-6 secret rotation (needs Supabase CLI install + lockstep dashboard flip).
+- **2026-07-14** · Fable deep-bank (expiring window) · 🧠 Fable ×6 · ✅ complete — 6 durable artifacts in
+  `docs/audit/{reviews,specs,growth}/` (draft SQL in `specs/drafts/`). Reviews found real holes in
+  shipped S1/S2 code (auth = **safe on security**, but reliability fixes needed; rate-limit XFF DoS;
+  incomplete RevenueCat fix; stale-types regression). All new items logged in
+  [`backlog.md`](backlog.md#addendum--fable-deep-bank-findings-2026-07-14). Next: fix batch for the
+  live-code R-items.

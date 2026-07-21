@@ -112,3 +112,37 @@ These are the launch-blockers. None require real engineering; most are Railway/d
 
 Each session spins off scoped subagents from the hub and reports back here; move completed items to the
 README execution log.
+
+---
+
+## Addendum — Fable deep-bank findings (2026-07-14)
+
+Six Fable agents banked durable artifacts (`docs/audit/{reviews,specs,growth}/`, draft SQL in
+`docs/audit/specs/drafts/`). New actionable items surfaced — **including real holes in the code we just
+shipped in Sessions 1–2.** Auth red-team verdict on the `getUser()` change: **SAFE on security** (0 crit/
+0 high, no authz inversion, admin guard closed); the findings are reliability.
+
+### NEW — live-code fixes from the reviews (our own S1/S2 changes)
+| # | Item | Sev | Evidence | Fix | Who |
+|---|------|-----|----------|-----|-----|
+| R-H1 | Rate limiter trusts the *first* `x-forwarded-for` hop → bypassable + attacker can 429-DoS legit RevenueCat/Supabase webhooks (limiter runs before secret check) | **P1** | `rateLimit.ts:92-103` | trust the correct/last proxy hop or `getClientAddress`; consider secret-check-before-limit on webhooks | 🔧 S |
+| R-H2 | RevenueCat RENEWAL/EXPIRATION/CANCELLATION use `.update().eq()` → silent 200 on 0 rows (T1-4 recurs one event later) | **P1** | `revenuecat/+server.ts:89-137` | upsert or rowcount-check | 🔧 S |
+| R-M3 | Restored types barrel points at **stale** shared types (missing `contact_submissions` + 7 forum tables); safety is illusory (untyped clients hide it) | **P1** | `packages/shared/src/types/database.ts` | run the `supabase gen types` regen (the real T1-1 fix) | 👤 CLI + ⚙️ S |
+| R-A | Auth reliability: `getUser()` per-request → public pages hard-depend on auth server + concurrent-refresh race (flicker/logout) + reshape footgun + redundant round-trips | **P1** | `hooks.server.ts`, 23 `+page.server.ts` | centralize: validate once in `hooks.server.ts`, stash `locals.user`, read `locals` everywhere | 🧠 M |
+| R-RC1 | Non-UUID `app_user_id` (RC anon ids) → guaranteed-fail 500 retry loop | P2 | `revenuecat/+server.ts` | validate/skip non-UUID | 🔧 S |
+| R-RC2 | No event-ordering guard → a retried stale RENEWAL can resurrect Pro after EXPIRATION | P2 | `revenuecat/+server.ts` | ordering/timestamp guard | 🔧 M |
+| R-L1 | `handleError` error-logs every crawler 404 (noise) | P3 | `hooks.server.ts` | skip 404s / log at info | ⚙️ S |
+
+### NEW — latent bugs found during spec work
+| # | Item | Sev | Evidence | Who |
+|---|------|-----|----------|-----|
+| B-1 | `isPro()` rejects `status === 'trialing'` → trials grant no Pro (blocks the trial pricing experiment) | P2 | `subscriptions.ts:45-47` | 🔧 S |
+| B-2 | `og:url` hardcoded to homepage → every page shares as `saltgoat.co` | P2 | `app.html:15` | ⚙️ S |
+| B-3 | `robots.txt` is bare `Allow: /` — should disallow `/admin`, `/api/`, `/profile`, `/auth` | P2 | robots | ⚙️ S |
+| B-4 | Leaderboard `isPro` badge wrong for all but viewer (RLS own-read) | — | folded into T1-9 (DEFINER RPC fixes it) | — |
+| B-5 | Achievement concurrent-duplicate-award kills the batch | — | folded into T1-10 (upsert) | — |
+
+### Ready-to-execute specs (post-Fable, cheap models)
+- **T1-6** rotation → migration draft `specs/drafts/…rotate_signup_webhook_secret.sql` + `specs/T1-6-rotation-runbook.md` (Vault approach). Needs Supabase CLI + lockstep flip.
+- **T1-9/T1-10** scale → `specs/T1-9-T1-10-scale-specs.md` + draft SQL. Sonnet-implementable, zero call-site signature changes.
+- **Growth** → `growth/seo-content-execution.md` (8 SEO tickets + 12 content briefs) and `growth/monetization-retention.md` (pricing experiments + digest architecture + A72 activation).

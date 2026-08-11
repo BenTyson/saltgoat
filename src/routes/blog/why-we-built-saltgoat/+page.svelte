@@ -47,7 +47,7 @@
     <article class="prose-content space-y-12 animate-fade-in-up" style="animation-delay: 100ms">
       <!-- The problem -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">The Problem</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">The Problem</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           If you've tried tracking your 14er progress before, you know the landscape. There are spreadsheets passed around Facebook groups. Forum threads on sites that haven't been redesigned since 2008. A handful of apps that work on desktop but are painful on a phone. Scattered beta across a dozen different sources.
         </p>
@@ -58,7 +58,7 @@
 
       <!-- Modern experience -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">A Modern Experience</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">A Modern Experience</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           We wanted something that felt like a modern app. Fast, clean, mobile-friendly. Something you could check at the trailhead on your phone just as easily as you could browse at home on a laptop.
         </p>
@@ -69,7 +69,7 @@
 
       <!-- Community-driven -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">Built for the Community</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">Built for the Community</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           The best information about 14ers comes from the people who climb them. That's why SaltGoat puts community data front and center: reviews from real hikers, trail reports with current conditions, and a photo gallery that shows you what the mountain actually looks like right now.
         </p>
@@ -80,7 +80,7 @@
 
       <!-- Free tier -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">Free Where It Matters</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">Free Where It Matters</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           We believe basic summit tracking should be free. Logging your climbs, reading reviews, checking weather and conditions, browsing peaks and routes -- none of that should be locked behind a paywall.
         </p>
@@ -91,7 +91,7 @@
 
       <!-- The name -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">Why "SaltGoat"</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">Why "SaltGoat"</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           If you've spent time above treeline in Colorado, you've probably had a mountain goat walk right up to you. They're not being friendly -- they're after your salt. Sweat, pee spots near the trail, a dropped snack -- mountain goats seek out sodium wherever they can find it. It's a quirk that every experienced 14er hiker knows.
         </p>
@@ -102,7 +102,7 @@
 
       <!-- Future vision -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">Where We're Headed</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">Where We're Headed</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           SaltGoat is just getting started. We're working on accurate trail data with proper GPS tracks, so you can see the actual route on a map. We want to build guided experiences for first-time 14er hikers. Better trip planning tools. More ways to share your adventures.
         </p>
@@ -112,10 +112,9 @@
       </section>
 
       <!-- CTA -->
-      <section class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-mountain-blue via-mountain-blue-light to-mountain-mist p-8 sm:p-10">
-        <div class="absolute top-0 right-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl"></div>
+      <section class="relative rounded-lg overflow-hidden bg-mountain-navy p-8 sm:p-10">
         <div class="relative text-center">
-          <h2 class="text-2xl font-display font-bold text-white mb-3">Join the Journey</h2>
+          <h2 class="text-2xl font-display font-normal text-white mb-3">Join the Journey</h2>
           <p class="text-white/80 mb-6">Create a free account and start building your 14er story.</p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a

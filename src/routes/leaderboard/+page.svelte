@@ -30,9 +30,9 @@
   }
 
   function getRankStyle(rank: number): string {
-    if (rank === 1) return 'bg-gradient-to-r from-accent-light to-accent text-mountain-navy';
-    if (rank === 2) return 'bg-gradient-to-r from-slate-300 to-slate-400 text-slate-800';
-    if (rank === 3) return 'bg-gradient-to-r from-accent-muted to-accent-dark text-white';
+    if (rank === 1) return 'bg-accent text-mountain-navy';
+    if (rank === 2) return 'bg-slate-300 text-slate-800';
+    if (rank === 3) return 'bg-accent-dark text-white';
     return 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
   }
 </script>
@@ -42,34 +42,32 @@
   <meta name="description" content="See who's leading the charge to summit all 58 Colorado 14ers. Track your rank among fellow peak baggers." />
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+<div class="min-h-screen bg-white dark:bg-slate-900">
   <Container class="py-12">
     <!-- Header -->
     <div class="mb-10">
-      <h1 class="heading-page text-slate-900 dark:text-white flex items-center gap-3">
-        <svg class="h-8 w-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-        </svg>
+      <p class="eyebrow-accent mb-3">The race to 58</p>
+      <h1 class="heading-page text-slate-900 dark:text-white">
         Leaderboard
       </h1>
-      <p class="text-slate-600 dark:text-slate-400 mt-2">
-        The race to summit all 58 Colorado 14ers
+      <p class="text-slate-600 dark:text-slate-400 mt-3">
+        Who's leading the charge across Colorado's fourteeners
       </p>
     </div>
 
     <!-- Stats Overview -->
-    <div class="grid grid-cols-3 gap-4 mb-8">
-      <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 shadow-card text-center">
-        <div class="text-3xl font-bold text-accent">{stats.totalClimbers}</div>
-        <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">Active Climbers</div>
+    <div class="grid grid-cols-3 divide-x divide-slate-200 dark:divide-slate-700/70 border-y border-slate-200 dark:border-slate-700/70 mb-10">
+      <div class="py-6 px-4 text-center">
+        <div class="stats-number font-display text-3xl sm:text-4xl text-slate-900 dark:text-white">{stats.totalClimbers}</div>
+        <div class="eyebrow mt-2">Active Climbers</div>
       </div>
-      <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 shadow-card text-center">
-        <div class="text-3xl font-bold text-mountain-blue dark:text-mountain-mist">{stats.totalSummitsLogged.toLocaleString()}</div>
-        <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">Summits Logged</div>
+      <div class="py-6 px-4 text-center">
+        <div class="stats-number font-display text-3xl sm:text-4xl text-slate-900 dark:text-white">{stats.totalSummitsLogged.toLocaleString()}</div>
+        <div class="eyebrow mt-2">Summits Logged</div>
       </div>
-      <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 shadow-card text-center">
-        <div class="text-3xl font-bold text-slate-900 dark:text-white">{stats.peakBaggers}</div>
-        <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">Peak Baggers</div>
+      <div class="py-6 px-4 text-center">
+        <div class="stats-number font-display text-3xl sm:text-4xl text-slate-900 dark:text-white">{stats.peakBaggers}</div>
+        <div class="eyebrow mt-2">Peak Baggers</div>
       </div>
     </div>
 
@@ -92,7 +90,7 @@
               {#each leaderboard as entry, index}
                 <a
                   href="/users/{entry.userId}"
-                  class="grid grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors {index < 3 ? 'bg-gradient-to-r from-transparent via-accent/5 to-transparent' : ''}"
+                  class="grid grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors {index < 3 ? 'bg-accent/[0.04] dark:bg-accent/[0.06]' : ''}"
                 >
                   <!-- Rank -->
                   <div class="col-span-1 flex justify-center">
@@ -104,7 +102,7 @@
                   <!-- Climber -->
                   <div class="col-span-5">
                     <div class="flex items-center gap-3">
-                      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-mountain-blue to-mountain-mist flex items-center justify-center text-white text-sm font-bold">
+                      <div class="w-8 h-8 rounded-full bg-mountain-slate flex items-center justify-center text-white text-sm font-bold">
                         {entry.displayName.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -141,7 +139,7 @@
                     <div class="flex items-center gap-2">
                       <div class="flex-1 h-2 rounded-full bg-slate-200 dark:bg-slate-600 overflow-hidden">
                         <div
-                          class="h-full rounded-full bg-gradient-to-r from-accent to-accent-warm transition-all"
+                          class="h-full rounded-full bg-accent transition-all"
                           style="width: {entry.progress}%"
                         ></div>
                       </div>
@@ -178,12 +176,7 @@
       <div>
         <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-card overflow-hidden">
           <div class="px-4 py-3 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-            <h2 class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Recent Activity
-            </h2>
+            <h2 class="eyebrow">Recent Activity</h2>
           </div>
 
           {#if recentActivity.length > 0}
@@ -220,21 +213,18 @@
         </div>
 
         <!-- Call to Action -->
-        <div class="mt-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent-warm/10 border border-accent/20 p-6 text-center">
-          <h3 class="font-semibold text-slate-900 dark:text-white mb-2">
-            Join the Challenge
+        <div class="mt-6 rounded-lg border border-accent/25 bg-accent/[0.06] p-6 text-center">
+          <h3 class="font-display text-xl text-slate-900 dark:text-white mb-2">
+            Join the challenge
           </h3>
           <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
             Create an account to track your progress and compete with other climbers.
           </p>
           <a
             href="/auth"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-accent to-accent-warm text-white font-medium text-sm hover:from-accent-warm hover:to-accent transition-all shadow-md hover:shadow-lg"
+            class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-accent text-mountain-navy font-semibold text-sm hover:bg-accent-light transition-colors"
           >
-            Get Started
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
+            Get started
           </a>
         </div>
       </div>

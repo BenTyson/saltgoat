@@ -127,7 +127,7 @@
                 "
                 title={achievement.definition.description}
               >
-                <div class="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-accent to-accent-warm shadow-sm">
+                <div class="flex items-center justify-center w-7 h-7 rounded-lg bg-accent shadow-sm">
                   <AchievementIcon icon={achievement.definition.icon} earned={true} class="text-white" />
                 </div>
                 <span class="font-medium text-slate-900 dark:text-white text-sm">{achievement.definition.title}</span>
@@ -175,7 +175,7 @@
                   </div>
                   <div class="h-1.5 rounded-full bg-slate-200 dark:bg-slate-600 overflow-hidden">
                     <div
-                      class="h-full rounded-full bg-gradient-to-r from-accent to-accent-warm transition-all duration-300"
+                      class="h-full rounded-full bg-accent transition-all duration-300"
                       style="width: {pct}%"
                     ></div>
                   </div>

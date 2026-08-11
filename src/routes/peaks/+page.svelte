@@ -109,8 +109,9 @@
 <Container class="py-8 sm:py-12">
   <!-- Header -->
   <div class="mb-10">
+    <p class="eyebrow-accent mb-3">The complete list</p>
     <h1 class="heading-page text-slate-900 dark:text-white">
-      Colorado <span class="text-accent">14ers</span>
+      Colorado's 14ers
     </h1>
     <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
       All {data.peaks.length} fourteeners, sorted by elevation
@@ -173,8 +174,8 @@
               border
               {selectedClass === option.value
                 ? option.value
-                  ? `bg-class-${option.value} text-white border-class-${option.value} shadow-glow-class-${option.value}`
-                  : 'bg-mountain-blue text-white border-mountain-blue'
+                  ? `bg-class-${option.value} text-white border-class-${option.value}`
+                  : 'bg-mountain-blue text-white border-mountain-blue dark:bg-white dark:text-mountain-navy dark:border-white'
                 : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600'}
             "
           >
@@ -305,14 +306,9 @@
 
   <!-- Peak List -->
   {#if filteredPeaks().length > 0}
-    <div class="space-y-4 stagger-children">
-      {#each filteredPeaks() as peak, i}
-        <div
-          class="animate-fade-in-up"
-          style="animation-delay: {Math.min(i * 50, 500)}ms"
-        >
-          <PeakCard {peak} />
-        </div>
+    <div class="space-y-3">
+      {#each filteredPeaks() as peak (peak.id)}
+        <PeakCard {peak} />
       {/each}
     </div>
   {:else}

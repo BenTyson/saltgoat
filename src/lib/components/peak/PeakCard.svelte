@@ -24,46 +24,34 @@
 <a
   href="/peaks/{peak.slug}"
   class="
-    group relative block overflow-hidden rounded-xl
-    border border-slate-200 border-l-4 bg-white
-    shadow-card transition-all duration-300
-    hover:-translate-y-1 hover:shadow-card-hover
-    dark:border-slate-700 dark:bg-slate-800/90
+    group relative block overflow-hidden rounded-lg
+    border border-slate-200 border-l-2 bg-white
+    transition-all duration-300
+    hover:border-slate-300 hover:shadow-card-hover
+    dark:border-slate-700/80 dark:bg-slate-800/60
+    dark:hover:border-slate-600
     {classAccents[difficultyClass]}
-    {featured ? 'ring-2 ring-accent/30' : ''}
+    {featured ? 'ring-1 ring-accent/40' : ''}
     {className}
   "
 >
-  <!-- Hover gradient overlay -->
-  <div
-    class="
-      absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-accent/5
-      opacity-0 transition-opacity duration-300 group-hover:opacity-100
-      pointer-events-none
-    "
-  ></div>
-
-  <div class="relative flex gap-4 p-4">
+  <div class="relative flex gap-5 p-4 sm:p-5">
     <!-- Image / Gradient Placeholder -->
-    <div class="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-lg sm:h-36 sm:w-36">
+    <div class="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md sm:h-32 sm:w-32">
       {#if peak.hero_image_url}
         <img
           src={peak.hero_image_url}
           alt="{peak.name} - Colorado 14er"
-          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
           width="144"
           height="144"
         />
-        <!-- Gradient overlay on hover -->
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
-        ></div>
       {:else}
         <div class="h-full w-full peak-gradient relative">
           <div class="absolute inset-0 flex items-center justify-center">
             <svg
-              class="h-12 w-12 text-white/40 transition-transform duration-500 group-hover:scale-110"
+              class="h-10 w-10 text-white/40"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -79,123 +67,60 @@
           </div>
         </div>
       {/if}
-
-      <!-- Rank badge overlay -->
-      <div
-        class="
-          absolute top-2 left-2 flex items-center justify-center
-          h-7 w-7 rounded-full bg-black/60 backdrop-blur-sm
-          text-xs font-bold text-white
-        "
-      >
-        #{peak.rank}
-      </div>
     </div>
 
     <!-- Content -->
-    <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0 flex-1 flex flex-col justify-between py-0.5">
       <div>
-        <!-- Peak name -->
-        <h3
-          class="
-            text-lg font-bold text-slate-900
-            transition-colors duration-200
-            group-hover:text-mountain-blue
-            dark:text-white dark:group-hover:text-accent
-            sm:text-xl
-          "
-        >
-          {peak.name}
-        </h3>
-
-        <!-- Elevation with visual emphasis -->
-        <div class="mt-1.5 flex items-baseline gap-3">
-          <span class="font-display text-2xl font-medium text-mountain-blue dark:text-accent">
-            {peak.elevation.toLocaleString()}'
-          </span>
+        <div class="flex items-baseline gap-3">
+          <span class="eyebrow !text-[10px]">No. {peak.rank}</span>
+          <span class="text-xs text-slate-400 dark:text-slate-500 truncate">{peak.range}</span>
         </div>
 
-        <!-- Range -->
-        <div
-          class="mt-2 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5"
-        >
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          {peak.range}
+        <div class="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <h3
+            class="
+              font-display font-normal text-xl sm:text-2xl tracking-tight
+              text-slate-900 dark:text-white
+              transition-colors duration-200
+              group-hover:text-accent-dark dark:group-hover:text-accent
+            "
+          >
+            {peak.name}
+          </h3>
+          <span class="stats-number text-base sm:text-lg text-slate-500 dark:text-slate-400">
+            {peak.elevation.toLocaleString()}'
+          </span>
         </div>
       </div>
 
       <!-- Bottom row: Badge + Stats -->
-      <div class="mt-3 flex flex-wrap items-center gap-3">
-        <Badge variant="class-{difficultyClass}" size="md">Class {difficultyClass}</Badge>
+      <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <Badge variant="class-{difficultyClass}" size="sm">Class {difficultyClass}</Badge>
         {#if peak.standard_route?.distance_miles}
-          <span class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
-            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-              />
-            </svg>
+          <span class="stats-number text-sm text-slate-500 dark:text-slate-400">
             {peak.standard_route.distance_miles} mi
           </span>
         {/if}
         {#if peak.standard_route?.elevation_gain_ft}
-          <span class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
-            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M7 11l5-5m0 0l5 5m-5-5v12"
-              />
-            </svg>
-            {peak.standard_route.elevation_gain_ft.toLocaleString()}'
+          <span class="stats-number text-sm text-slate-500 dark:text-slate-400">
+            {peak.standard_route.elevation_gain_ft.toLocaleString()}' gain
           </span>
         {/if}
       </div>
     </div>
 
-    <!-- Animated chevron -->
-    <div class="flex items-center">
-      <div
-        class="
-          flex h-10 w-10 items-center justify-center rounded-full
-          bg-slate-100 text-slate-400
-          transition-all duration-300
-          group-hover:bg-accent group-hover:text-white
-          group-hover:translate-x-1
-          dark:bg-slate-700 dark:text-slate-400
-        "
+    <!-- Arrow -->
+    <div class="hidden sm:flex items-center pr-1">
+      <svg
+        class="h-5 w-5 text-slate-300 dark:text-slate-600 transition-all duration-300 group-hover:text-accent group-hover:translate-x-1"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
       >
-        <svg
-          class="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </div>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      </svg>
     </div>
   </div>
 </a>

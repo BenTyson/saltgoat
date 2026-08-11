@@ -59,17 +59,10 @@
 <Container class="py-12 sm:py-16">
   <!-- Start Here Section -->
   <section id="start" class="scroll-mt-20 animate-fade-in-up">
-    <div class="flex items-center gap-4 mb-8">
-      <div class="flex-1 h-px bg-gradient-to-r from-accent/50 to-transparent"></div>
-      <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-3">
-        <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-accent/10">
-          <svg class="h-5 w-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L2 22h20L12 2zm0 4l7 14H5l7-14z" />
-          </svg>
-        </span>
-        Start Here
-      </h2>
-      <div class="flex-1 h-px bg-gradient-to-l from-accent/50 to-transparent"></div>
+    <div class="flex items-center gap-5 mb-8">
+      <div class="rule-line"></div>
+      <h2 class="heading-section text-slate-900 dark:text-white">Start here</h2>
+      <div class="rule-line"></div>
     </div>
 
     <p class="text-center text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
@@ -130,17 +123,10 @@
 
   <!-- Quick FAQ Section -->
   <section class="mt-20 animate-fade-in-up" style="animation-delay: 150ms">
-    <div class="flex items-center gap-4 mb-8">
-      <div class="flex-1 h-px bg-gradient-to-r from-blue-500/50 to-transparent"></div>
-      <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-3">
-        <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10">
-          <svg class="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </span>
-        Quick Answers
-      </h2>
-      <div class="flex-1 h-px bg-gradient-to-l from-blue-500/50 to-transparent"></div>
+    <div class="flex items-center gap-5 mb-8">
+      <div class="rule-line"></div>
+      <h2 class="heading-section text-slate-900 dark:text-white">Quick answers</h2>
+      <div class="rule-line"></div>
     </div>
 
     <div class="max-w-3xl mx-auto space-y-3">
@@ -223,17 +209,10 @@
 
   <!-- Coming Soon Section -->
   <section class="mt-20 animate-fade-in-up" style="animation-delay: 300ms">
-    <div class="flex items-center gap-4 mb-8">
-      <div class="flex-1 h-px bg-gradient-to-r from-slate-300 dark:from-slate-600 to-transparent"></div>
-      <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-3">
-        <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800">
-          <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </span>
-        Coming Soon
-      </h2>
-      <div class="flex-1 h-px bg-gradient-to-l from-slate-300 dark:from-slate-600 to-transparent"></div>
+    <div class="flex items-center gap-5 mb-8">
+      <div class="rule-line"></div>
+      <h2 class="heading-section text-slate-900 dark:text-white">Coming soon</h2>
+      <div class="rule-line"></div>
     </div>
 
     <p class="text-center text-slate-500 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
@@ -254,13 +233,10 @@
 
   <!-- CTA Section -->
   <section class="mt-20 animate-fade-in-up" style="animation-delay: 400ms">
-    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-mountain-blue via-mountain-blue-light to-mountain-mist p-8 sm:p-12">
-      <!-- Decorative elements -->
-      <div class="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
+    <div class="relative rounded-lg overflow-hidden bg-mountain-navy p-8 sm:p-12">
 
       <div class="relative text-center max-w-2xl mx-auto">
-        <h2 class="text-2xl sm:text-3xl font-display font-bold text-white mb-4">
+        <h2 class="text-2xl sm:text-3xl font-display font-normal text-white mb-4">
           Ready to Start Your Journey?
         </h2>
         <p class="text-white/80 mb-8">
@@ -269,16 +245,13 @@
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="/peaks"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-mountain-blue font-semibold hover:bg-slate-100 transition-colors shadow-lg"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg border border-white/25 text-white font-semibold hover:border-white/50 hover:bg-white/5 transition-colors"
           >
-            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L2 22h20L12 2zm0 4l7 14H5l7-14z" />
-            </svg>
             Explore Peaks
           </a>
           <a
             href="/learn/first-fourteener"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-warm transition-colors"
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-accent text-mountain-navy font-semibold hover:bg-accent-light transition-colors"
           >
             Take the Quiz
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

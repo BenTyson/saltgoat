@@ -170,7 +170,7 @@
               <!-- Summit Activity -->
               <div class="flex items-start gap-4">
                 <!-- Icon -->
-                <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center">
+                <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
                   <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l7 9 7-9M5 21l7-9 7 9" />
                   </svg>
@@ -308,7 +308,7 @@
             {:else if item.type === 'achievement' && isAchievement(item.data)}
               <!-- Achievement Activity -->
               <div class="flex items-center gap-4 bg-gradient-to-r from-accent/5 to-accent-warm/5 -m-4 p-4 rounded-xl">
-                <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center shadow-md">
+                <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-accent flex items-center justify-center shadow-md">
                   <AchievementIcon icon={item.data.definition.icon} earned={true} class="w-6 h-6 text-white" />
                 </div>
 
@@ -533,7 +533,7 @@
       </p>
       <a
         href="/peaks"
-        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-accent to-accent-warm text-white font-medium hover:from-accent-warm hover:to-accent transition-all shadow-md hover:shadow-lg"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-mountain-navy font-medium hover:bg-accent-light transition-all shadow-md hover:shadow-lg"
       >
         Browse Peaks
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

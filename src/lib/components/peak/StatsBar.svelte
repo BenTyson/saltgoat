@@ -14,143 +14,52 @@
 
   let { route, compact = false, class: className = '' }: Props = $props();
 
-  const classGradients: Record<number, string> = {
-    1: 'from-class-1 to-semantic-success-dark',
-    2: 'from-class-2 to-blue-700',
-    3: 'from-class-3 to-semantic-warning-dark',
-    4: 'from-class-4 to-semantic-danger-dark'
-  };
-
-  const classGlows: Record<number, string> = {
-    1: 'shadow-glow-class-1',
-    2: 'shadow-glow-class-2',
-    3: 'shadow-glow-class-3',
-    4: 'shadow-glow-class-4'
+  const classText: Record<number, string> = {
+    1: 'text-class-1',
+    2: 'text-class-2',
+    3: 'text-class-3',
+    4: 'text-class-4'
   };
 </script>
 
 <div
   class="
-    grid grid-cols-2 gap-3 rounded-xl border p-4 sm:grid-cols-4
-    bg-gradient-to-br from-slate-50 to-white
-    border-slate-200/80
-    dark:from-slate-800/50 dark:to-slate-900/50
-    dark:border-slate-700/50
+    grid grid-cols-2 sm:grid-cols-4
+    divide-y sm:divide-y-0 sm:divide-x
+    divide-slate-200 dark:divide-slate-700/70
+    border-y border-slate-200 dark:border-slate-700/70
     {className}
   "
 >
   <!-- Distance -->
-  <div
-    class="
-      group relative flex flex-col items-center p-3 rounded-lg
-      transition-all duration-300 hover:scale-105
-      hover:bg-white/50 dark:hover:bg-slate-700/50
-    "
-  >
-    <svg
-      class="h-5 w-5 mb-2 text-slate-400 dark:text-slate-500 group-hover:text-accent transition-colors"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-      />
-    </svg>
-    <div class="stats-number text-xl font-bold text-mountain-blue dark:text-white sm:text-2xl">
+  <div class="flex flex-col items-center py-4 sm:py-5">
+    <div class="stats-number font-display text-2xl text-slate-900 dark:text-white sm:text-3xl">
       {route.distance_miles}
     </div>
-    <div class="text-xs uppercase tracking-wider mt-1 text-slate-500 dark:text-slate-400">
-      miles RT
-    </div>
+    <div class="eyebrow mt-1.5">miles RT</div>
   </div>
 
   <!-- Elevation Gain -->
-  <div
-    class="
-      group relative flex flex-col items-center p-3 rounded-lg
-      transition-all duration-300 hover:scale-105
-      hover:bg-white/50 dark:hover:bg-slate-700/50
-    "
-  >
-    <svg
-      class="h-5 w-5 mb-2 text-slate-400 dark:text-slate-500 group-hover:text-accent transition-colors"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M7 11l5-5m0 0l5 5m-5-5v12"
-      />
-    </svg>
-    <div class="stats-number text-xl font-bold text-mountain-blue dark:text-white sm:text-2xl">
-      {route.elevation_gain_ft.toLocaleString()}
+  <div class="flex flex-col items-center py-4 sm:py-5">
+    <div class="stats-number font-display text-2xl text-slate-900 dark:text-white sm:text-3xl">
+      {route.elevation_gain_ft.toLocaleString()}'
     </div>
-    <div class="text-xs uppercase tracking-wider mt-1 text-slate-500 dark:text-slate-400">
-      ft gain
-    </div>
+    <div class="eyebrow mt-1.5">gain</div>
   </div>
 
   <!-- Difficulty Class -->
-  <div
-    class="
-      group relative flex flex-col items-center p-3 rounded-lg
-      transition-all duration-300 hover:scale-105
-      bg-gradient-to-br {classGradients[route.difficulty_class]} text-white
-      {classGlows[route.difficulty_class]}
-    "
-  >
-    <svg
-      class="h-5 w-5 mb-2 text-white/80"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-    <div class="stats-number text-xl font-bold text-white sm:text-2xl">
+  <div class="flex flex-col items-center py-4 sm:py-5">
+    <div class="stats-number font-display text-2xl sm:text-3xl {classText[route.difficulty_class]}">
       Class {route.difficulty_class}
     </div>
-    <div class="text-xs uppercase tracking-wider mt-1 text-white/70">difficulty</div>
+    <div class="eyebrow mt-1.5">difficulty</div>
   </div>
 
   <!-- Time -->
-  <div
-    class="
-      group relative flex flex-col items-center p-3 rounded-lg
-      transition-all duration-300 hover:scale-105
-      hover:bg-white/50 dark:hover:bg-slate-700/50
-    "
-  >
-    <svg
-      class="h-5 w-5 mb-2 text-slate-400 dark:text-slate-500 group-hover:text-accent transition-colors"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-    <div class="stats-number text-xl font-bold text-mountain-blue dark:text-white sm:text-2xl">
+  <div class="flex flex-col items-center py-4 sm:py-5">
+    <div class="stats-number font-display text-2xl text-slate-900 dark:text-white sm:text-3xl">
       {route.typical_time_hours || '—'}
     </div>
-    <div class="text-xs uppercase tracking-wider mt-1 text-slate-500 dark:text-slate-400">
-      hours
-    </div>
+    <div class="eyebrow mt-1.5">hours</div>
   </div>
 </div>

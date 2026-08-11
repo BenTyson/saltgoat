@@ -44,7 +44,7 @@
           class="h-10 w-10 rounded-full object-cover"
         />
       {:else}
-        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center">
+        <div class="h-10 w-10 rounded-full bg-accent flex items-center justify-center">
           <span class="text-sm font-semibold text-white">
             {getInitials(review.profile?.display_name)}
           </span>

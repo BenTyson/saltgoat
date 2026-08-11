@@ -79,23 +79,16 @@
     class="absolute inset-0 bg-gradient-to-r from-mountain-navy/40 via-transparent to-transparent"
   ></div>
 
-  <!-- Sunrise glow at horizon -->
-  <div
-    class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-accent/20 to-transparent opacity-60"
-  ></div>
-
   {#if showOverlay}
     <!-- Peak info overlay -->
     <div class="absolute inset-x-0 bottom-0 p-6 pb-24 sm:p-8 sm:pb-28">
-      <div class="animate-fade-in-up" style="animation-delay: 200ms">
-        <p
-          class="text-white/60 text-sm uppercase tracking-widest mb-2"
-        >
+      <div class="animate-fade-in-up">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60 mb-3">
           Colorado Fourteener
         </p>
         <h1 class="heading-page text-white drop-shadow-lg">{peak.name}</h1>
         <p
-          class="mt-2 font-display text-3xl text-accent drop-shadow-md"
+          class="mt-2 font-display text-3xl text-accent-light drop-shadow-md stats-number"
         >
           {peak.elevation.toLocaleString()}'
         </p>
@@ -106,13 +99,11 @@
     <div class="absolute top-4 right-4 sm:top-6 sm:right-6">
       <div
         class="
-          flex items-center gap-2 rounded-full
-          bg-black/40 backdrop-blur-sm px-4 py-2
-          text-white text-sm font-medium
+          rounded-full bg-black/40 backdrop-blur-sm px-4 py-2
+          text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90
         "
       >
-        <span class="h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-        Rank #{peak.rank}
+        No. {peak.rank} of 58
       </div>
     </div>
   {/if}

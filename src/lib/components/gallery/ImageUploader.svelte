@@ -208,9 +208,9 @@
             disabled={isUploading}
             class="
               mt-3 w-full sm:w-auto px-6 py-2.5 rounded-lg
-              bg-gradient-to-r from-accent to-accent-warm
+              bg-accent
               text-white font-medium
-              hover:from-accent-warm hover:to-accent
+              hover:bg-accent-light
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-all duration-300
             "

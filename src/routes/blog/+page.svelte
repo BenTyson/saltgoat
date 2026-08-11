@@ -46,16 +46,16 @@
         <a
           href={post.href}
           class="
-            block p-6 sm:p-8 rounded-2xl
+            block p-6 sm:p-8 rounded-lg
             border border-slate-200 dark:border-slate-700
-            bg-white dark:bg-slate-800
-            shadow-sm hover:shadow-card
+            bg-white dark:bg-slate-800/60
+            hover:shadow-card-hover hover:border-slate-300 dark:hover:border-slate-600
             transition-all duration-200
             group
           "
         >
-          <div class="text-sm text-slate-500 dark:text-slate-400 mb-2">{post.date}</div>
-          <h2 class="text-xl sm:text-2xl font-display font-bold text-slate-900 dark:text-white group-hover:text-accent transition-colors mb-3">
+          <div class="eyebrow mb-3">{post.date}</div>
+          <h2 class="text-xl sm:text-2xl font-display font-normal text-slate-900 dark:text-white group-hover:text-accent transition-colors mb-3">
             {post.title}
           </h2>
           <p class="text-slate-600 dark:text-slate-400 leading-relaxed">{post.excerpt}</p>

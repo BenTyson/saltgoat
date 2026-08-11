@@ -36,7 +36,7 @@
         class="w-12 h-12 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-600"
       />
     {:else}
-      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center ring-2 ring-slate-200 dark:ring-slate-600">
+      <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center ring-2 ring-slate-200 dark:ring-slate-600">
         <span class="text-white font-semibold text-sm">
           {getInitials(user.display_name)}
         </span>
@@ -96,7 +96,7 @@
           px-4 py-2 rounded-lg text-sm font-medium transition-all
           {isFollowing
             ? 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-            : 'bg-gradient-to-r from-accent to-accent-warm text-white hover:from-accent-warm hover:to-accent shadow-sm hover:shadow'}
+            : 'bg-accent text-mountain-navy hover:bg-accent-light shadow-sm hover:shadow'}
           disabled:opacity-50 disabled:cursor-not-allowed
         "
       >

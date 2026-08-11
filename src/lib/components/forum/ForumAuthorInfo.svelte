@@ -24,7 +24,7 @@
       class="{avatarSize} rounded-full object-cover flex-shrink-0 ring-2 ring-transparent group-hover:ring-accent/30 transition-all"
     />
   {:else}
-    <div class="{avatarSize} rounded-full bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center flex-shrink-0 ring-2 ring-transparent group-hover:ring-accent/30 transition-all">
+    <div class="{avatarSize} rounded-full bg-accent flex items-center justify-center flex-shrink-0 ring-2 ring-transparent group-hover:ring-accent/30 transition-all">
       <span class="text-white font-bold {size === 'sm' ? 'text-xs' : 'text-sm'}">
         {(author.display_name || 'H').charAt(0).toUpperCase()}
       </span>

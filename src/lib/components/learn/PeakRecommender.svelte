@@ -249,7 +249,7 @@
       </p>
       <button
         onclick={startQuiz}
-        class="px-8 py-3 rounded-xl bg-gradient-to-r from-accent to-accent-warm text-white font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all"
+        class="px-8 py-3 rounded-xl bg-accent text-mountain-navy font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all"
       >
         Start Quiz
       </button>
@@ -266,7 +266,7 @@
         </div>
         <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
           <div
-            class="bg-gradient-to-r from-accent to-accent-warm h-2 rounded-full transition-all duration-300"
+            class="bg-accent h-2 rounded-full transition-all duration-300"
             style="width: {progressPercent}%"
           ></div>
         </div>

@@ -64,7 +64,7 @@
       "
       style="animation-delay: 100ms"
     >
-      <div class="h-1.5 bg-gradient-to-r from-accent to-accent-warm"></div>
+      <div class="h-1.5 bg-accent"></div>
 
       <div class="p-6 sm:p-8">
         {#if success}

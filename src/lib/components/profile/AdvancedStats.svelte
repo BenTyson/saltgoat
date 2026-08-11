@@ -166,7 +166,7 @@
             </div>
             <div class="h-2.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
               <div
-                class="bg-gradient-to-r from-accent to-accent-warm h-full rounded-full transition-all duration-500"
+                class="bg-accent h-full rounded-full transition-all duration-500"
                 style="width: {pct}%"
               ></div>
             </div>

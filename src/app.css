@@ -95,19 +95,28 @@
 
   /* Display Typography */
   .heading-hero {
-    @apply font-display text-5xl tracking-tight sm:text-6xl lg:text-7xl;
+    @apply font-display font-normal text-5xl tracking-tight sm:text-6xl lg:text-7xl;
   }
 
   .heading-page {
-    @apply font-display text-3xl tracking-tight sm:text-4xl lg:text-5xl;
+    @apply font-display font-normal text-3xl tracking-tight sm:text-4xl lg:text-5xl;
   }
 
   .heading-section {
-    @apply text-2xl font-bold tracking-tight sm:text-3xl;
+    @apply font-display font-normal text-2xl tracking-tight sm:text-3xl;
   }
 
   .stat-display {
-    @apply font-display text-4xl tracking-tight sm:text-5xl;
+    @apply font-display font-normal text-4xl tracking-tight sm:text-5xl;
+  }
+
+  /* Editorial eyebrow label — small caps, wide tracking */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400;
+  }
+
+  .eyebrow-accent {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-dark dark:text-accent;
   }
 }
 
@@ -166,15 +175,20 @@
 
   /* Staggered children animation delays */
   .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-  .stagger-children > *:nth-child(2) { animation-delay: 75ms; }
-  .stagger-children > *:nth-child(3) { animation-delay: 150ms; }
-  .stagger-children > *:nth-child(4) { animation-delay: 225ms; }
-  .stagger-children > *:nth-child(5) { animation-delay: 300ms; }
-  .stagger-children > *:nth-child(6) { animation-delay: 375ms; }
-  .stagger-children > *:nth-child(7) { animation-delay: 450ms; }
-  .stagger-children > *:nth-child(8) { animation-delay: 525ms; }
-  .stagger-children > *:nth-child(9) { animation-delay: 600ms; }
-  .stagger-children > *:nth-child(10) { animation-delay: 675ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 40ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 80ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 120ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 160ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(7) { animation-delay: 240ms; }
+  .stagger-children > *:nth-child(8) { animation-delay: 280ms; }
+  .stagger-children > *:nth-child(9) { animation-delay: 320ms; }
+  .stagger-children > *:nth-child(10) { animation-delay: 360ms; }
+
+  /* Hairline rule that extends beside an editorial section heading */
+  .rule-line {
+    @apply h-px flex-1 bg-slate-200 dark:bg-slate-700/70;
+  }
 
   /* Initial state for animated elements */
   .will-animate {
@@ -226,12 +240,12 @@
 
   /* Peak Card Hover Effect */
   .peak-card {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover;
+    @apply transition-all duration-300 hover:shadow-card-hover;
   }
 
   /* Badge Variants - Enhanced */
   .badge {
-    @apply inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold transition-all duration-200;
+    @apply inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors duration-200;
   }
 
   .badge-class-1 {
@@ -256,10 +270,10 @@
 
   /* CTA Button */
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-mountain-navy shadow-glow-accent transition-all duration-300 hover:bg-accent-dark hover:text-white hover:scale-105;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 font-semibold text-mountain-navy transition-colors duration-200 hover:bg-accent-light;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center gap-2 rounded-full border-2 border-mountain-blue bg-transparent px-6 py-3 font-semibold text-mountain-blue transition-all duration-300 hover:bg-mountain-blue hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-mountain-blue;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-transparent px-6 py-3 font-semibold text-slate-800 transition-colors duration-200 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-100 dark:hover:border-slate-500 dark:hover:bg-slate-800;
   }
 }

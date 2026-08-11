@@ -16,21 +16,14 @@
 {#if hasData}
   <section
     class="
-      animate-fade-in-up rounded-xl overflow-hidden
+      animate-fade-in-up rounded-lg overflow-hidden
       border border-slate-200 dark:border-slate-700
-      bg-gradient-to-br from-white to-slate-50
-      dark:from-slate-800 dark:to-slate-800/80
-      shadow-card
+      bg-white dark:bg-slate-800/60
       {className}
     "
   >
     <div class="p-5">
-      <h3 class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-        <svg class="h-5 w-5 text-mountain-blue dark:text-mountain-mist" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        Quick Facts
-      </h3>
+      <h3 class="eyebrow">Quick Facts</h3>
 
       <dl class="mt-4 grid grid-cols-2 gap-4">
         <!-- Range (always shown) -->

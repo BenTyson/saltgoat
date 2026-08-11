@@ -303,15 +303,15 @@
       border border-slate-200/50 dark:border-slate-700/50
     "
   >
-    <!-- Gradient top border based on difficulty -->
+    <!-- Top rule in difficulty color -->
     <div
       class="
-        h-1.5
-        {standardRoute?.difficulty_class === 1 ? 'bg-gradient-to-r from-class-1 to-semantic-success-light' :
-         standardRoute?.difficulty_class === 2 ? 'bg-gradient-to-r from-class-2 to-blue-400' :
-         standardRoute?.difficulty_class === 3 ? 'bg-gradient-to-r from-class-3 to-semantic-warning-light' :
-         standardRoute?.difficulty_class === 4 ? 'bg-gradient-to-r from-class-4 to-semantic-danger-light' :
-         'bg-gradient-to-r from-accent to-accent-warm'}
+        h-0.5
+        {standardRoute?.difficulty_class === 1 ? 'bg-class-1' :
+         standardRoute?.difficulty_class === 2 ? 'bg-class-2' :
+         standardRoute?.difficulty_class === 3 ? 'bg-class-3' :
+         standardRoute?.difficulty_class === 4 ? 'bg-class-4' :
+         'bg-accent'}
       "
     ></div>
 
@@ -373,10 +373,10 @@
       <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
           {#if standardRoute}
-            <p class="text-xs uppercase tracking-widest text-accent font-semibold mb-2">
+            <p class="eyebrow-accent mb-2">
               Standard Route
             </p>
-            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+            <h2 class="font-display font-normal text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
               {standardRoute.name}
             </h2>
           {/if}
@@ -435,12 +435,10 @@
   <!-- Description -->
   {#if peak.description}
     <section class="mt-10 animate-fade-in-up" style="animation-delay: 150ms">
-      <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-2">
-        <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        Overview
-      </h2>
+      <div class="flex items-center gap-5">
+        <h2 class="heading-section text-slate-900 dark:text-white">Overview</h2>
+        <div class="rule-line"></div>
+      </div>
       <p class="mt-4 leading-relaxed text-slate-700 dark:text-slate-300 text-lg">
         {peak.description}
       </p>
@@ -463,13 +461,9 @@
   <!-- Image Upload (all logged-in users) -->
   {#if isLoggedIn}
     <section class="mt-10 animate-fade-in-up" style="animation-delay: 275ms">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-2">
-          <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Add Photo
-        </h2>
+      <div class="flex items-center gap-5 mb-4">
+        <h2 class="heading-section text-slate-900 dark:text-white">Add a photo</h2>
+        <div class="rule-line"></div>
       </div>
       <ImageUploader peakId={peak.id} onUpload={handleImageUpload} />
     </section>
@@ -477,19 +471,16 @@
 
   <!-- Location -->
   <section class="mt-10 animate-fade-in-up" style="animation-delay: 200ms">
-    <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-2">
-      <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-      Location
-    </h2>
+    <div class="flex items-center gap-5">
+      <h2 class="heading-section text-slate-900 dark:text-white">Location</h2>
+      <div class="rule-line"></div>
+    </div>
     <div
       class="
-        mt-4 rounded-xl
+        mt-4 rounded-lg
         border border-slate-200 dark:border-slate-700
-        bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/50
-        p-6 shadow-card
+        bg-white dark:bg-slate-800/60
+        p-6
       "
     >
       <div class="flex flex-wrap gap-8">
@@ -523,18 +514,14 @@
 
   <!-- Routes -->
   <section class="mt-10 animate-fade-in-up" style="animation-delay: 250ms">
-    <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-2">
-      <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-      </svg>
-      Routes
-    </h2>
+    <div class="flex items-center gap-5">
+      <h2 class="heading-section text-slate-900 dark:text-white">Routes</h2>
+      <div class="rule-line"></div>
+    </div>
     {#if peak.routes && peak.routes.length > 0}
-      <div class="mt-4 space-y-4 stagger-children">
-        {#each peak.routes.sort((a, b) => (a.is_standard === b.is_standard ? 0 : a.is_standard ? -1 : 1)) as route, i}
-          <div class="animate-fade-in-up" style="animation-delay: {300 + i * 75}ms">
-            <RouteCard {route} peakSlug={peak.slug} />
-          </div>
+      <div class="mt-4 space-y-3">
+        {#each peak.routes.sort((a, b) => (a.is_standard === b.is_standard ? 0 : a.is_standard ? -1 : 1)) as route (route.id)}
+          <RouteCard {route} peakSlug={peak.slug} />
         {/each}
       </div>
     {:else}
@@ -588,14 +575,11 @@
 <section class="mt-16 border-t border-slate-200 dark:border-slate-700">
   <div class="bg-slate-50 dark:bg-slate-800/50 py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="heading-section text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-        <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        Location
-      </h2>
-      <div class="rounded-xl overflow-hidden shadow-card-elevated border border-slate-200 dark:border-slate-700 h-[400px]">
+      <div class="flex items-center gap-5 mb-6">
+        <h2 class="heading-section text-slate-900 dark:text-white">On the map</h2>
+        <div class="rule-line"></div>
+      </div>
+      <div class="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 h-[400px]">
         {#if browser}
           {#await import('$lib/components/map/PeakMap.svelte') then { default: PeakMap }}
             <PeakMap
@@ -649,14 +633,10 @@
 {#if relatedPeaks.length > 0}
   <section class="mt-12 animate-fade-in-up">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="heading-section text-slate-900 dark:text-white mb-6 flex items-center gap-3">
-        <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-accent/10">
-          <svg class="h-5 w-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L2 22h20L12 2zm0 4l7 14H5l7-14z" />
-          </svg>
-        </span>
-        Hikers Also Climbed
-      </h2>
+      <div class="flex items-center gap-5 mb-6">
+        <h2 class="heading-section text-slate-900 dark:text-white">Hikers also climbed</h2>
+        <div class="rule-line"></div>
+      </div>
       <div class="grid gap-4 sm:grid-cols-2">
         {#each relatedPeaks as relatedPeak (relatedPeak.id)}
           <PeakCard peak={relatedPeak} />
@@ -693,7 +673,7 @@
       <div class="flex flex-col gap-3">
         <a
           href="/pricing"
-          class="block w-full px-6 py-3 rounded-lg bg-gradient-to-r from-accent to-accent-warm text-white font-medium hover:from-accent-warm hover:to-accent transition-all shadow-md"
+          class="block w-full px-6 py-3 rounded-lg bg-accent text-mountain-navy font-medium hover:bg-accent-light transition-all shadow-md"
         >
           Upgrade to Pro -- $29.99/yr
         </a>

@@ -283,7 +283,7 @@
         <button
           type="submit"
           disabled={loading || !title || !startDate || selectedPeakIds.length === 0}
-          class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-accent to-accent-warm text-white font-medium hover:from-accent-warm hover:to-accent transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-6 py-2.5 rounded-lg bg-accent text-mountain-navy font-medium hover:bg-accent-light transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {#if loading}
             <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">

@@ -45,14 +45,12 @@
 
 {#if today && current}
   <section class="mt-10 animate-fade-in-up" style="animation-delay: 175ms">
-    <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-      <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-      </svg>
-      Summit Weather
-    </h2>
+    <div class="flex items-center gap-5 mb-4">
+      <h2 class="heading-section text-slate-900 dark:text-white">Summit Weather</h2>
+      <div class="rule-line"></div>
+    </div>
 
-    <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/50 shadow-card overflow-hidden">
+    <div class="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 overflow-hidden">
       <!-- Current conditions -->
       <div class="p-6">
         <div class="flex flex-wrap items-start justify-between gap-6">

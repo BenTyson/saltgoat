@@ -62,7 +62,7 @@
             class="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-2xl shadow-lg object-cover ring-4 ring-white dark:ring-slate-800 bg-white dark:bg-slate-800"
           />
         {:else}
-          <div class="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-2xl shadow-lg bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center ring-4 ring-white dark:ring-slate-800">
+          <div class="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-2xl shadow-lg bg-accent flex items-center justify-center ring-4 ring-white dark:ring-slate-800">
             <span class="text-4xl sm:text-5xl font-bold text-white">{initials}</span>
           </div>
         {/if}

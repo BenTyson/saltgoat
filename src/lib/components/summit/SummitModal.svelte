@@ -384,9 +384,9 @@
             disabled={isSubmitting}
             class="
               w-full rounded-lg py-3
-              bg-gradient-to-r from-accent to-accent-warm
+              bg-accent
               text-white font-semibold
-              hover:from-accent-warm hover:to-accent
+              hover:bg-accent-light
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-all duration-300
               shadow-md hover:shadow-lg

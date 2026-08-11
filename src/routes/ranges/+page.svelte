@@ -50,7 +50,7 @@
 
   <Container class="relative py-16 sm:py-20">
     <div class="max-w-3xl">
-      <h1 class="text-4xl sm:text-5xl font-display font-bold text-white mb-4">
+      <h1 class="text-4xl sm:text-5xl font-display font-normal text-white mb-4">
         Mountain Ranges
       </h1>
       <p class="text-xl text-white/80 leading-relaxed">

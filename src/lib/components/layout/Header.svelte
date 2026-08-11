@@ -80,15 +80,15 @@
         href="/"
         class="group flex items-center gap-2.5 text-xl font-bold {transparent && !scrolled ? 'text-white' : 'text-mountain-blue dark:text-white'}"
       >
-        <span class="inline-flex items-center justify-center rounded-full transition-all duration-300 h-11 w-11 {transparent && !scrolled ? 'bg-white/90' : 'dark:bg-white'}">
+        <span class="inline-flex items-center justify-center rounded-full h-11 w-11 {transparent && !scrolled ? 'bg-white/90' : 'dark:bg-white'}">
           <img
             src="/brand/SaltGoat_LogoGoat.png"
             alt=""
-            class="h-8 w-auto transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+            class="h-8 w-auto"
             aria-hidden="true"
           />
         </span>
-        <span class="font-display text-2xl tracking-tight">SaltGoat</span>
+        <span class="font-display font-normal text-2xl tracking-tight">SaltGoat</span>
       </a>
 
       <!-- Desktop Nav -->
@@ -118,12 +118,12 @@
           <a
             href={link.href}
             class="
-              relative px-2.5 py-2 font-medium text-sm
+              relative px-2.5 py-2 text-xs font-semibold uppercase tracking-[0.12em]
               transition-colors duration-200
               {transparent && !scrolled
                 ? 'text-white/80 hover:text-white'
-                : 'text-slate-600 hover:text-mountain-blue dark:text-slate-300 dark:hover:text-white'}
-              after:absolute after:inset-x-1 after:bottom-0.5 after:h-0.5
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'}
+              after:absolute after:inset-x-2 after:bottom-1 after:h-px
               after:bg-accent after:scale-x-0 after:transition-transform after:duration-300
               hover:after:scale-x-100
             "
@@ -141,12 +141,12 @@
           <a
             href="/profile"
             class="
-              relative px-2.5 py-2 font-medium text-sm
+              relative px-2.5 py-2 text-xs font-semibold uppercase tracking-[0.12em]
               transition-colors duration-200
               {transparent && !scrolled
                 ? 'text-accent-light hover:text-white'
-                : 'text-accent hover:text-accent-warm dark:text-accent-light dark:hover:text-white'}
-              after:absolute after:inset-x-1 after:bottom-0.5 after:h-0.5
+                : 'text-accent-dark hover:text-accent dark:text-accent-light dark:hover:text-white'}
+              after:absolute after:inset-x-2 after:bottom-1 after:h-px
               after:bg-accent after:scale-x-0 after:transition-transform after:duration-300
               hover:after:scale-x-100
             "
@@ -168,8 +168,8 @@
               {#if profile?.avatar_url}
                 <img src={profile.avatar_url} alt="" class="h-9 w-9 rounded-full" />
               {:else}
-                <div class="h-9 w-9 rounded-full bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center">
-                  <span class="text-white font-bold text-sm">
+                <div class="h-9 w-9 rounded-full bg-accent flex items-center justify-center">
+                  <span class="text-mountain-navy font-bold text-sm">
                     {(profile?.display_name || 'H').charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -233,10 +233,10 @@
           <a
             href="/auth"
             class="
-              px-4 py-2 rounded-lg text-sm font-medium transition-colors
+              px-4 py-2 rounded-lg text-sm font-semibold transition-colors
               {transparent && !scrolled
-                ? 'bg-white/15 text-white border border-white/25 hover:bg-white/25'
-                : 'bg-accent text-white hover:bg-accent-warm'}
+                ? 'text-white border border-white/40 hover:border-white hover:bg-white/10'
+                : 'bg-accent text-mountain-navy hover:bg-accent-light'}
             "
           >
             Log In
@@ -299,18 +299,16 @@
         "
       >
         <div class="flex flex-col gap-1">
-          {#each navLinks as link, i}
+          {#each navLinks as link}
             <a
               href={link.href}
               class="
                 tap-target flex items-center rounded-lg px-4 py-3
                 text-lg font-medium text-slate-700
-                transition-all duration-200
-                hover:bg-accent/10 hover:text-accent
-                dark:text-slate-200 dark:hover:bg-accent/20
-                animate-fade-in-up
+                transition-colors duration-200
+                hover:bg-slate-50 hover:text-slate-900
+                dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white
               "
-              style="animation-delay: {i * 50}ms"
               onclick={closeMobileMenu}
             >
               {link.label}
@@ -326,9 +324,8 @@
                 onclick={closeMobileMenu}
                 class="
                   flex items-center gap-3 mx-4 mb-4 px-4 py-3 rounded-xl
-                  bg-gradient-to-r from-accent/10 to-accent-warm/10
-                  border border-accent/30
-                  hover:from-accent/20 hover:to-accent-warm/20
+                  bg-accent/10 border border-accent/30
+                  hover:bg-accent/15 transition-colors
                 "
               >
                 <div class="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center">
@@ -337,7 +334,7 @@
                   </svg>
                 </div>
                 <div>
-                  <span class="font-semibold text-accent">My 58</span>
+                  <span class="font-semibold text-accent-dark dark:text-accent">My 58</span>
                   <span class="block text-xs text-slate-500 dark:text-slate-400">Track your summits</span>
                 </div>
               </a>
@@ -366,7 +363,7 @@
               <a
                 href="/auth"
                 onclick={closeMobileMenu}
-                class="block mx-4 py-3 text-center rounded-lg bg-accent text-white font-medium hover:bg-accent-warm transition-colors"
+                class="block mx-4 py-3 text-center rounded-lg bg-accent text-mountain-navy font-semibold hover:bg-accent-light transition-colors"
               >
                 Log In
               </a>

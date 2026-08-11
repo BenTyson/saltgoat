@@ -18,7 +18,7 @@
       </div>
 
       <!-- Error code -->
-      <h1 class="text-6xl font-display font-bold text-slate-900 dark:text-white mb-4">
+      <h1 class="text-6xl font-display font-normal text-slate-900 dark:text-white mb-4">
         {$page.status}
       </h1>
 
@@ -47,8 +47,8 @@
           href="/"
           class="
             inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl
-            bg-gradient-to-r from-accent to-accent-warm text-white font-semibold
-            hover:from-accent-warm hover:to-accent transition-all shadow-md hover:shadow-lg
+            bg-accent text-mountain-navy font-semibold
+            hover:bg-accent-light transition-all shadow-md hover:shadow-lg
           "
         >
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

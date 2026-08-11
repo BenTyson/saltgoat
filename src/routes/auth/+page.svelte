@@ -94,13 +94,13 @@
 
     <div
       class="
-        animate-fade-in-up rounded-2xl overflow-hidden
-        bg-white/90 dark:bg-slate-800/90 backdrop-blur-md
-        shadow-card-elevated border border-slate-200/50 dark:border-slate-700/50
+        animate-fade-in-up rounded-lg overflow-hidden
+        bg-white dark:bg-slate-800
+        shadow-card border border-slate-200 dark:border-slate-700
       "
       style="animation-delay: 100ms"
     >
-      <div class="h-1.5 bg-gradient-to-r from-accent to-accent-warm"></div>
+      <div class="h-0.5 bg-accent"></div>
 
       <div class="p-6 sm:p-8">
         {#if mode !== 'forgot'}
@@ -109,8 +109,8 @@
             onclick={handleGoogleLogin}
             disabled={loading}
             class="
-              w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl
-              border border-slate-200 dark:border-slate-600
+              w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg
+              border border-slate-300 dark:border-slate-500
               bg-white dark:bg-slate-700
               text-slate-700 dark:text-slate-200 font-medium
               hover:bg-slate-50 dark:hover:bg-slate-600

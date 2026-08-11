@@ -92,7 +92,7 @@
     </div>
     <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
       <div
-        class="bg-gradient-to-r from-accent to-accent-warm h-2 rounded-full transition-all duration-300"
+        class="bg-accent h-2 rounded-full transition-all duration-300"
         style="width: {progress}%"
       ></div>
     </div>

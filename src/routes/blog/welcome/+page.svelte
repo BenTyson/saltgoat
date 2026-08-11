@@ -47,7 +47,7 @@
     <article class="prose-content space-y-12 animate-fade-in-up" style="animation-delay: 100ms">
       <!-- What is SaltGoat -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">What is SaltGoat?</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">What is SaltGoat?</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           SaltGoat is a free app for tracking your progress across all 58 of Colorado's fourteeners. Whether you just bagged your first summit or you're closing in on the full list, SaltGoat gives you a single place to log your climbs, remember the details, and see how far you've come.
         </p>
@@ -58,7 +58,7 @@
 
       <!-- Core features -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">What You Can Do</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">What You Can Do</h2>
         <div class="grid gap-4 sm:grid-cols-2">
           <div class="p-5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
             <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Log Summits</h3>
@@ -81,7 +81,7 @@
 
       <!-- Community -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">Built for the Community</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">Built for the Community</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           Climbing 14ers is more fun with other people. SaltGoat includes leaderboards to see where you stand, the ability to follow friends and track their progress, and trip sharing so you can plan and celebrate together.
         </p>
@@ -92,7 +92,7 @@
 
       <!-- Learning resources -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">New to 14ers?</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">New to 14ers?</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           We have a growing collection of <a href="/learn" class="text-accent hover:text-accent-warm transition-colors font-medium">guides</a> covering safety, gear, trip planning, and choosing your first peak. The mountains are incredible, but they demand respect. Start informed.
         </p>
@@ -100,17 +100,16 @@
 
       <!-- What's coming -->
       <section>
-        <h2 class="text-2xl font-display font-bold text-slate-900 dark:text-white mb-4">What's Coming</h2>
+        <h2 class="text-2xl font-display font-normal text-slate-900 dark:text-white mb-4">What's Coming</h2>
         <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
           SaltGoat is actively evolving. We're working on better trail data, improved route maps, and more ways to connect with the hiking community. If there's something you'd like to see, we're listening.
         </p>
       </section>
 
       <!-- CTA -->
-      <section class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-mountain-blue via-mountain-blue-light to-mountain-mist p-8 sm:p-10">
-        <div class="absolute top-0 right-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl"></div>
+      <section class="relative rounded-lg overflow-hidden bg-mountain-navy p-8 sm:p-10">
         <div class="relative text-center">
-          <h2 class="text-2xl font-display font-bold text-white mb-3">Start Tracking Your Summits</h2>
+          <h2 class="text-2xl font-display font-normal text-white mb-3">Start Tracking Your Summits</h2>
           <p class="text-white/80 mb-6">Create a free account and log your first 14er.</p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a

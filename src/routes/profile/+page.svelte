@@ -114,7 +114,7 @@
   <title>My Profile | SaltGoat</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+<div class="min-h-screen bg-white dark:bg-slate-900">
   <!-- Profile Header -->
   {#if profile}
     <ProfileHeader
@@ -183,24 +183,24 @@
 
       <!-- Journey Stats -->
       {#if stats.totalSummits > 0}
-        <div class="rounded-xl bg-gradient-to-br from-accent/5 to-accent-warm/5 border border-accent/20 p-6 mb-8">
-          <h3 class="text-sm font-semibold text-accent uppercase tracking-wider mb-4">Journey Stats</h3>
+        <div class="border-y border-slate-200 dark:border-slate-700/70 py-6 mb-8">
+          <h3 class="eyebrow-accent mb-5">Journey Stats</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
-              <div class="text-2xl font-bold text-slate-900 dark:text-white">
+              <div class="stats-number font-display text-3xl text-slate-900 dark:text-white">
                 {stats.totalElevationGain.toLocaleString()}'
               </div>
               <div class="text-sm text-slate-600 dark:text-slate-400">Total Elevation Gained</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-slate-900 dark:text-white">
+              <div class="stats-number font-display text-3xl text-slate-900 dark:text-white">
                 {stats.totalDistanceMiles.toFixed(1)} mi
               </div>
               <div class="text-sm text-slate-600 dark:text-slate-400">Total Distance Hiked</div>
             </div>
             {#if stats.highestPeak}
               <div>
-                <div class="text-2xl font-bold text-slate-900 dark:text-white">
+                <div class="stats-number font-display text-3xl text-slate-900 dark:text-white">
                   {stats.highestPeak.elevation.toLocaleString()}'
                 </div>
                 <div class="text-sm text-slate-600 dark:text-slate-400">
@@ -209,7 +209,7 @@
               </div>
             {/if}
             <div>
-              <div class="text-2xl font-bold text-slate-900 dark:text-white">
+              <div class="stats-number font-display text-3xl text-slate-900 dark:text-white">
                 {stats.avgElevation.toLocaleString()}'
               </div>
               <div class="text-sm text-slate-600 dark:text-slate-400">Avg Peak Elevation</div>
@@ -220,12 +220,10 @@
 
       <!-- The Grid -->
       <section class="mb-8">
-        <h2 class="heading-section text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-          <svg class="h-6 w-6 text-accent" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L2 22h20L12 2zm0 4l7 14H5l7-14z" />
-          </svg>
-          The 58
-        </h2>
+        <div class="flex items-center gap-5 mb-4">
+          <h2 class="heading-section text-slate-900 dark:text-white">The 58</h2>
+          <div class="rule-line"></div>
+        </div>
         <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-card">
           <div class="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 lg:grid-cols-14 gap-1.5 sm:gap-2">
             {#each allPeaks as peak}
@@ -295,12 +293,7 @@
       <div class="grid md:grid-cols-2 gap-6 mt-8">
         <!-- Class Progress -->
         <section>
-          <h2 class="heading-section text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            By Difficulty
-          </h2>
+          <h2 class="heading-section text-slate-900 dark:text-white mb-4">By difficulty</h2>
           <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-card space-y-4">
             {#each [1, 2, 3, 4] as classNum}
               {@const classData = classStats[classNum]}
@@ -323,12 +316,7 @@
 
         <!-- Range Progress -->
         <section>
-          <h2 class="heading-section text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            </svg>
-            By Range
-          </h2>
+          <h2 class="heading-section text-slate-900 dark:text-white mb-4">By range</h2>
           <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-card space-y-4 max-h-[320px] overflow-y-auto">
             {#each sortedRanges as [range, rangeData]}
               {@const pct = rangeData.total > 0 ? (rangeData.summited / rangeData.total) * 100 : 0}
@@ -339,7 +327,7 @@
                 </div>
                 <div class="h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                   <div
-                    class="bg-gradient-to-r from-accent to-accent-warm h-full rounded-full transition-all duration-500"
+                    class="bg-accent h-full rounded-full transition-all duration-500"
                     style="width: {pct}%"
                   ></div>
                 </div>
@@ -352,13 +340,10 @@
       <!-- Watched Peaks -->
       {#if watchlist.length > 0}
         <section class="mt-8">
-          <h2 class="heading-section text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            Watched Peaks
-          </h2>
+          <div class="flex items-center gap-5 mb-4">
+            <h2 class="heading-section text-slate-900 dark:text-white">Watched peaks</h2>
+            <div class="rule-line"></div>
+          </div>
           <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-card overflow-hidden">
             <div class="divide-y divide-slate-200 dark:divide-slate-700">
               {#each watchlist as item}
@@ -413,13 +398,11 @@
       <!-- Advanced Stats -->
       {#if advancedStats}
         <section class="mt-8">
-          <h2 class="heading-section text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Advanced Stats
-            <span class="ml-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-accent to-accent-warm text-white text-xs font-medium">PRO</span>
-          </h2>
+          <div class="flex items-center gap-5 mb-4">
+            <h2 class="heading-section text-slate-900 dark:text-white">Advanced stats</h2>
+            <span class="px-2 py-0.5 rounded-full bg-accent text-mountain-navy text-[10px] font-semibold uppercase tracking-[0.14em]">Pro</span>
+            <div class="rule-line"></div>
+          </div>
           <AdvancedStats stats={advancedStats} />
           <div class="mt-4 flex justify-end">
             <a
@@ -436,7 +419,7 @@
         </section>
       {:else if subscription?.plan !== 'pro'}
         <section class="mt-8">
-          <div class="rounded-xl bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-800/50 border border-slate-200 dark:border-slate-700 p-6 shadow-card text-center">
+          <div class="rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-6 text-center">
             <div class="mx-auto h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center mb-3">
               <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -448,7 +431,7 @@
             </p>
             <a
               href="/pricing"
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-accent to-accent-warm text-white text-sm font-medium hover:from-accent-warm hover:to-accent transition-all shadow-sm"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-mountain-navy text-sm font-semibold hover:bg-accent-light transition-colors"
             >
               Upgrade to Pro
             </a>
@@ -459,12 +442,10 @@
       <!-- Recent Summits -->
       {#if stats.recentSummits.length > 0}
         <section class="mt-8">
-          <h2 class="heading-section text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Recent Summits
-          </h2>
+          <div class="flex items-center gap-5 mb-4">
+            <h2 class="heading-section text-slate-900 dark:text-white">Recent summits</h2>
+            <div class="rule-line"></div>
+          </div>
           <div class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-card overflow-hidden">
             <div class="divide-y divide-slate-200 dark:divide-slate-700">
               {#each stats.recentSummits as summit}
@@ -479,7 +460,7 @@
                       class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                     />
                   {:else}
-                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-mountain-blue to-mountain-mist flex items-center justify-center flex-shrink-0">
+                    <div class="w-16 h-16 rounded-lg bg-mountain-slate flex items-center justify-center flex-shrink-0">
                       <svg class="h-8 w-8 text-white/80" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2L2 22h20L12 2zm0 4l7 14H5l7-14z" />
                       </svg>
@@ -548,7 +529,7 @@
             <div class="text-center">
               <a
                 href="/peaks"
-                class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-accent to-accent-warm text-white font-medium hover:from-accent-warm hover:to-accent transition-all shadow-md hover:shadow-lg"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-mountain-navy font-semibold hover:bg-accent-light transition-colors"
               >
                 Browse Peaks
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -68,7 +68,7 @@
     </nav>
 
     <div class="max-w-3xl">
-      <h1 class="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
+      <h1 class="text-3xl sm:text-4xl font-display font-normal text-white mb-3">
         {rangeInfo.name}
       </h1>
       <p class="text-lg text-white/80 leading-relaxed mb-6">

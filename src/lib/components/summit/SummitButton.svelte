@@ -80,10 +80,10 @@
     onclick={onLogSummit}
     class="
       inline-flex items-center gap-2 rounded-lg
-      bg-gradient-to-r from-accent to-accent-warm
+      bg-accent
       px-4 py-2
       text-sm font-medium text-white
-      hover:from-accent-warm hover:to-accent
+      hover:bg-accent-light
       shadow-md hover:shadow-lg
       transition-all duration-300
       hover:scale-105

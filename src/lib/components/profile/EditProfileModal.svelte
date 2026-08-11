@@ -280,7 +280,7 @@
                 class="w-20 h-20 rounded-full object-cover border-2 border-slate-200 dark:border-slate-600"
               />
             {:else}
-              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-accent to-accent-warm flex items-center justify-center border-2 border-slate-200 dark:border-slate-600">
+              <div class="w-20 h-20 rounded-full bg-accent flex items-center justify-center border-2 border-slate-200 dark:border-slate-600">
                 <span class="text-xl font-bold text-white">{initials}</span>
               </div>
             {/if}
@@ -569,9 +569,9 @@
           disabled={isSubmitting || uploadingAvatar || uploadingCover}
           class="
             px-6 py-2.5 rounded-lg
-            bg-gradient-to-r from-accent to-accent-warm
+            bg-accent
             text-white text-sm font-semibold
-            hover:from-accent-warm hover:to-accent
+            hover:bg-accent-light
             disabled:opacity-50 disabled:cursor-not-allowed
             transition-all duration-300
             shadow-md hover:shadow-lg

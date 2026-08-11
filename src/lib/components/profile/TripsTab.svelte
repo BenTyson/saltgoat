@@ -83,7 +83,7 @@
         <button
           type="button"
           onclick={() => (showCreateModal = true)}
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-accent to-accent-warm text-white font-medium text-sm hover:from-accent-warm hover:to-accent transition-all shadow-sm hover:shadow"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-mountain-navy font-medium text-sm hover:bg-accent-light transition-all shadow-sm hover:shadow"
         >
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />

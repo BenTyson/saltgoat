@@ -127,7 +127,7 @@
          route.difficulty_class === 2 ? 'bg-gradient-to-r from-class-2 to-blue-400' :
          route.difficulty_class === 3 ? 'bg-gradient-to-r from-class-3 to-semantic-warning-light' :
          route.difficulty_class === 4 ? 'bg-gradient-to-r from-class-4 to-semantic-danger-light' :
-         'bg-gradient-to-r from-accent to-accent-warm'}
+         'bg-accent'}
       "
     ></div>
 

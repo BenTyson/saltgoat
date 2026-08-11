@@ -213,9 +213,9 @@
       disabled={isSubmitting || rating === 0}
       class="
         px-5 py-2.5 rounded-lg
-        bg-gradient-to-r from-accent to-accent-warm
+        bg-accent
         text-white font-medium
-        hover:from-accent-warm hover:to-accent
+        hover:bg-accent-light
         disabled:opacity-50 disabled:cursor-not-allowed
         transition-all duration-300
         shadow-md hover:shadow-lg

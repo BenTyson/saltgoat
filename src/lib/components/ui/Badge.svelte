@@ -49,8 +49,8 @@
 
 <span
   class="
-    inline-flex items-center gap-1.5 rounded-full border font-semibold
-    transition-all duration-200 hover:scale-105
+    inline-flex items-center gap-1.5 rounded-full border font-medium
+    transition-colors duration-200
     {variants[variant]}
     {sizes[size]}
     {glow ? glowVariants[variant] : ''}
@@ -59,7 +59,7 @@
 >
   {#if isClassVariant}
     <span
-      class="h-1.5 w-1.5 rounded-full bg-current animate-pulse-subtle"
+      class="h-1.5 w-1.5 rounded-full bg-current"
     ></span>
   {/if}
   {@render children()}

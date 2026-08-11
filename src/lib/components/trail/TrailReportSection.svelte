@@ -20,17 +20,17 @@
 </script>
 
 <section class="mt-10 animate-fade-in-up" style="animation-delay: 325ms">
-  <h2 class="heading-section text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-    <svg class="h-6 w-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-    </svg>
-    Trail Reports
-    {#if reports.length > 0}
-      <span class="text-sm font-normal text-slate-500 dark:text-slate-400">
-        ({reports.length} recent)
-      </span>
-    {/if}
-  </h2>
+  <div class="flex items-center gap-5 mb-4">
+    <h2 class="heading-section text-slate-900 dark:text-white">
+      Trail Reports
+      {#if reports.length > 0}
+        <span class="ml-2 font-sans text-sm text-slate-500 dark:text-slate-400">
+          ({reports.length} recent)
+        </span>
+      {/if}
+    </h2>
+    <div class="rule-line"></div>
+  </div>
 
   <!-- Report Form (logged in users) -->
   {#if isLoggedIn}
